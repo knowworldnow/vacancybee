@@ -36,7 +36,7 @@ const SingleMetaAction2: FC<Props> = ({ className = '', post }) => {
 					likeCount={ncPostMetaData?.likesCount || 0}
 					postDatabseId={databaseId}
 					linkToPost={uri}
-					showViewCount={NC_SITE_SETTINGS['single_page']?.show_view_cout}
+					showViewCount={NC_SITE_SETTINGS['single_page']?.show_view_count}
 					showCommentCount={NC_SITE_SETTINGS['single_page']?.show_comment_count}
 					viewCount={ncPostMetaData?.viewsCount || 1}
 				/>
