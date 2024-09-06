@@ -26,6 +26,7 @@ import { TCategoryCardFull } from "@/components/CardCategory1/CardCategory1";
 import SingleTypeAudio from "@/container/singles/single-audio/single-audio";
 import SingleTypeVideo from "@/container/singles/single-video/single-video";
 import SingleTypeGallery from "@/container/singles/single-gallery/single-gallery";
+import blocks from '../wp-blocks';
 
 const DynamicSingleRelatedPosts = dynamic(
   () => import("@/container/singles/SingleRelatedPosts")
@@ -238,35 +239,48 @@ Component.variables = ({ databaseId }, ctx) => {
   };
 };
 
-Component.query = gql(`
-  query GetPostSiglePage($databaseId: ID!, $post_databaseId: Int,$asPreview: Boolean = false, $headerLocation: MenuLocationEnum!, $footerLocation: MenuLocationEnum!) {
+Component.query = gql`
+  ${blocks.UbCallToActionBlock.fragments.entry}
+  query GetPostSiglePage($databaseId: ID!, $post_databaseId: Int, $asPreview: Boolean = false, $headerLocation: MenuLocationEnum!, $footerLocation: MenuLocationEnum!) {
     post(id: $databaseId, idType: DATABASE_ID, asPreview: $asPreview) {
-    ...NcmazFcPostFullFields
-    }
-    posts(where: {isRelatedOfPostId:$post_databaseId}) {
-      nodes {
-      ...PostCardFieldsNOTNcmazMEDIA
+      ...NcmazFcPostFullFields
+      editorBlocks {
+        name
+        __typename
+        renderedHtml
+        id: clientId
+        parentClientId
+        ...${blocks.UbCallToActionBlock.fragments.key}
       }
     }
-    categories(first:10, where: { orderby: COUNT, order: DESC }) {
+    posts(where: { isRelatedOfPostId: $post_databaseId }) {
+      nodes {
+        ...PostCardFieldsNOTNcmazMEDIA
+      }
+    }
+    categories(first: 10, where: { orderby: COUNT, order: DESC }) {
       nodes {
         ...NcmazFcCategoryFullFieldsFragment
       }
     }
     generalSettings {
       ...NcgeneralSettingsFieldsFragment
+Here is the continuation and completion of the code:
+
+```typescript
+      }
     }
-    primaryMenuItems: menuItems(where: {location:$headerLocation}, first: 80) {
+    primaryMenuItems: menuItems(where: { location: $headerLocation }, first: 80) {
       nodes {
         ...NcPrimaryMenuFieldsFragment
       }
     }
-    footerMenuItems: menuItems(where: {location:$footerLocation}, first: 40) {
+    footerMenuItems: menuItems(where: { location: $footerLocation }, first: 40) {
       nodes {
         ...NcFooterMenuFieldsFragment
       }
     }
   }
-`);
+`;
 
 export default Component;
