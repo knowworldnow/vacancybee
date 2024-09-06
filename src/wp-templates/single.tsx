@@ -228,7 +228,6 @@ Component.variables = ({ databaseId }, ctx) => {
 };
 
 Component.query = gql`
-  ${blocks.UbCallToActionBlock.fragments.entry}
   query GetPostSiglePage($databaseId: ID!, $post_databaseId: Int, $asPreview: Boolean = false, $headerLocation: MenuLocationEnum!, $footerLocation: MenuLocationEnum!) {
     post(id: $databaseId, idType: DATABASE_ID, asPreview: $asPreview) {
       ...NcmazFcPostFullFields
@@ -238,7 +237,7 @@ Component.query = gql`
         renderedHtml
         id: clientId
         parentClientId
-        ...${blocks.UbCallToActionBlock.fragments.key}
+        # Add specific fields directly here if needed
       }
     }
     posts(where: { isRelatedOfPostId: $post_databaseId }) {
