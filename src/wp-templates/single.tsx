@@ -45,7 +45,6 @@ const DynamicSingleType5 = dynamic(
 );
 
 const Component: FaustTemplate<GetPostSiglePageQuery> = (props) => {
-  //  LOADING ----------
   if (props.loading) {
     return <>Loading...</>;
   }
@@ -53,7 +52,6 @@ const Component: FaustTemplate<GetPostSiglePageQuery> = (props) => {
   const router = useRouter();
   const IS_PREVIEW = router.pathname === "/preview";
 
-  // START ----------
   const { isReady, isAuthenticated } = useSelector(
     (state: RootState) => state.viewer.authorizedUser
   );
@@ -84,13 +82,10 @@ const Component: FaustTemplate<GetPostSiglePageQuery> = (props) => {
     excerpt,
   } = getPostDataFromPostFragment(_post);
 
-  //
-  const {} = useGetPostsNcmazMetaByIds({
+  useGetPostsNcmazMetaByIds({
     posts: (IS_PREVIEW ? [] : [_post]) as TPostCard[],
   });
-  //
 
-  // Query update post view count
   const [handleUpdateReactionCount, { reset }] = useMutation(
     NC_MUTATION_UPDATE_USER_REACTION_POST_COUNT,
     {
@@ -101,13 +96,11 @@ const Component: FaustTemplate<GetPostSiglePageQuery> = (props) => {
     }
   );
 
-  // update view count
   useEffect(() => {
     if (!isReady || IS_PREVIEW || !isUpdateViewCount) {
       return;
     }
 
-    // user chua dang nhap, va update view count voi user la null
     if (isAuthenticated === false) {
       handleUpdateReactionCount({
         variables: {
@@ -119,12 +112,10 @@ const Component: FaustTemplate<GetPostSiglePageQuery> = (props) => {
       return;
     }
 
-    // user da dang nhap, va luc nay viewer dang fetch.
     if (!viewer?.databaseId) {
       return;
     }
 
-    // khi viewer fetch xong, luc nay viewer da co databaseId, va se update view count voi user la viewer
     handleUpdateReactionCount({
       variables: {
         post_id: databaseId,
@@ -201,7 +192,6 @@ const Component: FaustTemplate<GetPostSiglePageQuery> = (props) => {
                 </div>
               </div>
 
-              {/* RELATED POSTS */}
               <DynamicSingleRelatedPosts
                 posts={_relatedPosts}
                 postDatabaseId={databaseId}
@@ -213,11 +203,9 @@ const Component: FaustTemplate<GetPostSiglePageQuery> = (props) => {
             {renderHeaderType()}
 
             <div className="container mt-10">
-              {/* SINGLE MAIN CONTENT */}
               <SingleContent post={_post} />
             </div>
 
-            {/* RELATED POSTS */}
             <DynamicSingleRelatedPosts
               posts={_relatedPosts}
               postDatabaseId={databaseId}
@@ -265,10 +253,6 @@ Component.query = gql`
     }
     generalSettings {
       ...NcgeneralSettingsFieldsFragment
-Here is the continuation and completion of the code:
-
-```typescript
-      }
     }
     primaryMenuItems: menuItems(where: { location: $headerLocation }, first: 80) {
       nodes {
