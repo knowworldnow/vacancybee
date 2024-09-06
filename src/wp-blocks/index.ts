@@ -12,5 +12,4 @@ export default {
   NcmazFaustBlockGroup,
   CoreColumns,
   CoreColumn,
-  UbCallToActionBlock,
 };
