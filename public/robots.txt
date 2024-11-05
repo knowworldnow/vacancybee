@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+Allow: /*.html$
+Allow: /*.xml$
+
+# Allow posts and pages
+Allow: /*/$
+
+# Disallow specific paths
+Disallow: /api/
+Disallow: /category/
+Disallow: /tag/
+Disallow: /author/
+Disallow: /search/
+
+# Sitemaps
+Sitemap: https://vacancybee.com/sitemap.xml

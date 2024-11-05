@@ -37,7 +37,7 @@ export const urlForFeaturedImage = (source: any) => {
 export const getPosts = unstable_cache(
   async (): Promise<BasePost[]> => {
     try {
-      const posts = await client.fetch(`
+      const posts = await client.fetch<BasePost[]>(`
         *[_type == "post"] | order(publishedAt desc)[0...6] {
           _id,
           _type,
@@ -67,7 +67,7 @@ export const getPost = async (slug: string): Promise<Post | null> => {
     async (): Promise<Post | null> => {
       try {
         const [post, recentPosts] = await Promise.all([
-          client.fetch(`
+          client.fetch<Post>(`
             *[_type == "post" && slug.current == $slug][0] {
               _id,
               _type,
@@ -99,7 +99,7 @@ export const getPost = async (slug: string): Promise<Post | null> => {
               faqs
             }
           `, { slug }),
-          client.fetch(`
+          client.fetch<BasePost[]>(`
             *[_type == "post" && slug.current != $slug] | order(publishedAt desc)[0...10] {
               _id,
               _type,
@@ -129,4 +129,31 @@ export const getPost = async (slug: string): Promise<Post | null> => {
       revalidate: 3600 // Cache for 1 hour
     }
   )();
+};
+
+// Search posts
+export const searchPosts = async (searchQuery: string): Promise<BasePost[]> => {
+  try {
+    const query = `
+      *[_type == "post" && (
+        title match $searchQuery + "*" ||
+        excerpt match $searchQuery + "*" ||
+        pt::text(body) match $searchQuery + "*"
+      )] | order(publishedAt desc)[0...10] {
+        _id,
+        _type,
+        title,
+        slug,
+        mainImage,
+        excerpt,
+        publishedAt
+      }
+    `;
+
+    const posts = await client.fetch<BasePost[]>(query, { searchQuery: searchQuery.toLowerCase() });
+    return posts || [];
+  } catch (error) {
+    console.error('Error searching posts:', error);
+    return [];
+  }
 };
