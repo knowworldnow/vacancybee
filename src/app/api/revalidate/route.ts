@@ -1,7 +1,6 @@
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { type NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { createHmac } from 'crypto';
 import type { SanityDocument } from '@sanity/types';
 
 // Define expected webhook payload types
@@ -20,10 +19,39 @@ type ParsedWebhookBody = {
   result: WebhookBody;
 }
 
-function verifyWebhookSignature(body: string, signature: string, secret: string): boolean {
-  const hmac = createHmac('sha256', secret);
-  const computedSignature = hmac.update(body).digest('hex');
-  return signature === computedSignature;
+async function verifyWebhookSignature(body: string, signature: string, secret: string): Promise<boolean> {
+  try {
+    const encoder = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+      'raw',
+      encoder.encode(secret),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign']
+    );
+
+    const bodyBuffer = encoder.encode(body);
+    const signatureBuffer = new Uint8Array(
+      signature.match(/.{1,2}/g)?.map(byte => parseInt(byte, 16)) || []
+    );
+
+    const computedSignature = await crypto.subtle.sign(
+      'HMAC',
+      key,
+      bodyBuffer
+    );
+
+    const computedSignatureArray = new Uint8Array(computedSignature);
+    
+    if (signatureBuffer.length !== computedSignatureArray.length) {
+      return false;
+    }
+
+    return signatureBuffer.every((byte, i) => byte === computedSignatureArray[i]);
+  } catch (error) {
+    console.error('Signature verification error:', error);
+    return false;
+  }
 }
 
 async function readBody(readable: ReadableStream): Promise<string> {
@@ -53,7 +81,7 @@ export async function POST(req: NextRequest) {
     }
 
     const rawBody = await readBody(req.body!);
-    const isValid = verifyWebhookSignature(rawBody, signature, webhookSecret);
+    const isValid = await verifyWebhookSignature(rawBody, signature, webhookSecret);
 
     if (!isValid) {
       return new NextResponse('Invalid signature', { status: 401 });
@@ -126,6 +154,5 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// Use route segment config instead of export config
 export const dynamic = 'force-dynamic';
 export const runtime = 'edge';
