@@ -28,21 +28,25 @@ export default function SearchDialog() {
 
       setLoading(true);
       try {
-        const posts = await client.fetch(`
-          *[_type == "post" && (
-            title match $query + "*" ||
-            excerpt match $query + "*" ||
-            pt::text(body) match $query + "*"
-          )] | order(publishedAt desc)[0...10] {
-            _id,
-            _type,
-            title,
-            slug,
-            mainImage,
-            excerpt,
-            publishedAt
-          }
-        `, { query: query.toLowerCase() });
+        const searchQuery = `*[_type == "post" && (
+          title match $searchTerm + "*" ||
+          excerpt match $searchTerm + "*" ||
+          pt::text(body) match $searchTerm + "*"
+        )] | order(publishedAt desc)[0...10] {
+          _id,
+          _type,
+          title,
+          slug,
+          mainImage,
+          excerpt,
+          publishedAt
+        }`;
+
+        const params = {
+          searchTerm: query.toLowerCase()
+        };
+
+        const posts = await client.fetch(searchQuery, params);
         setResults(posts);
       } catch (error) {
         console.error('Search error:', error);
