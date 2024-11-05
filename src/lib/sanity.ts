@@ -1,7 +1,14 @@
 import { createClient } from '@sanity/client';
 import createImageUrlBuilder from '@sanity/image-url';
+import type { Image } from 'sanity';
 import type { BasePost, Post } from '@/lib/types';
 import { unstable_cache } from 'next/cache';
+
+interface PostsResponse {
+  posts: BasePost[];
+  total: number;
+  totalPages: number;
+}
 
 export const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
@@ -15,7 +22,7 @@ const imageBuilder = createImageUrlBuilder({
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || '',
 });
 
-export const urlForImage = (source: any) => {
+export const urlForImage = (source: Image) => {
   return imageBuilder?.image(source)
     .auto('format')
     .format('webp')
@@ -23,7 +30,7 @@ export const urlForImage = (source: any) => {
     .fit('max');
 };
 
-export const urlForFeaturedImage = (source: any) => {
+export const urlForFeaturedImage = (source: Image) => {
   return imageBuilder?.image(source)
     .width(1200)
     .height(800)
@@ -35,10 +42,14 @@ export const urlForFeaturedImage = (source: any) => {
 
 // Cache the posts query with tags
 export const getPosts = unstable_cache(
-  async (): Promise<BasePost[]> => {
+  async (page = 1): Promise<PostsResponse> => {
     try {
-      const posts = await client.fetch<BasePost[]>(`
-        *[_type == "post"] | order(publishedAt desc)[0...6] {
+      const postsPerPage = 6;
+      const start = (page - 1) * postsPerPage;
+      const end = start + postsPerPage;
+
+      const query = `
+        *[_type == "post"] | order(publishedAt desc)[$start...$end] {
           _id,
           _type,
           title,
@@ -47,11 +58,27 @@ export const getPosts = unstable_cache(
           excerpt,
           publishedAt
         }
-      `);
-      return posts || [];
+      `;
+
+      const countQuery = `count(*[_type == "post"])`;
+
+      const [posts, total] = await Promise.all([
+        client.fetch<BasePost[]>(query, { start, end }),
+        client.fetch<number>(countQuery)
+      ]);
+
+      return {
+        posts: posts || [],
+        total,
+        totalPages: Math.ceil(total / postsPerPage)
+      };
     } catch (error) {
       console.error('Error fetching posts:', error);
-      return [];
+      return {
+        posts: [],
+        total: 0,
+        totalPages: 0
+      };
     }
   },
   ['posts'],
@@ -66,50 +93,54 @@ export const getPost = async (slug: string): Promise<Post | null> => {
   return unstable_cache(
     async (): Promise<Post | null> => {
       try {
+        const query = `
+          *[_type == "post" && slug.current == $slug][0] {
+            _id,
+            _type,
+            title,
+            slug,
+            mainImage,
+            excerpt,
+            publishedAt,
+            body,
+            author->{
+              _id,
+              _type,
+              name,
+              slug,
+              image,
+              bio
+            },
+            categories[]->{
+              _id,
+              _type,
+              title,
+              slug,
+              description
+            },
+            "viewCount": coalesce(
+              *[_type == "postViews" && post._ref == ^._id][0].views,
+              0
+            ),
+            faqs
+          }
+        `;
+
+        const recentPostsQuery = `
+          *[_type == "post" && slug.current != $slug] | order(publishedAt desc)[0...10] {
+            _id,
+            _type,
+            title,
+            slug,
+            mainImage,
+            excerpt,
+            publishedAt
+          }
+        `;
+
         const [post, recentPosts] = await Promise.all([
-          client.fetch<Post>(`
-            *[_type == "post" && slug.current == $slug][0] {
-              _id,
-              _type,
-              title,
-              slug,
-              mainImage,
-              excerpt,
-              publishedAt,
-              body,
-              author->{
-                _id,
-                _type,
-                name,
-                slug,
-                image,
-                bio
-              },
-              categories[]->{
-                _id,
-                _type,
-                title,
-                slug,
-                description
-              },
-              "viewCount": coalesce(
-                *[_type == "postViews" && post._ref == ^._id][0].views,
-                0
-              ),
-              faqs
-            }
-          `, { slug }),
-          client.fetch<BasePost[]>(`
-            *[_type == "post" && slug.current != $slug] | order(publishedAt desc)[0...10] {
-              _id,
-              _type,
-              title,
-              slug,
-              mainImage,
-              excerpt,
-              publishedAt
-            }
-          `, { slug })
+          client.fetch<Post>(query, { slug }),
+          client.fetch<BasePost[]>(recentPostsQuery, { slug })
         ]);
 
         if (!post) return null;
@@ -150,7 +181,8 @@ export const searchPosts = async (searchQuery: string): Promise<BasePost[]> => {
       }
     `;
 
-    const posts = await client.fetch<BasePost[]>(query, { searchQuery: searchQuery.toLowerCase() });
+    const params = { searchQuery: searchQuery.toLowerCase() };
+    const posts = await client.fetch<BasePost[]>(query, params);
     return posts || [];
   } catch (error) {
     console.error('Error searching posts:', error);

@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -5,9 +7,14 @@ import { Button } from '@/components/ui/button';
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
+  pathPrefix?: string;
 }
 
-export default function Pagination({ currentPage, totalPages }: PaginationProps) {
+export default function Pagination({ 
+  currentPage, 
+  totalPages,
+  pathPrefix = ''
+}: PaginationProps) {
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
   const maxVisible = 5;
   
@@ -23,6 +30,11 @@ export default function Pagination({ currentPage, totalPages }: PaginationProps)
     visiblePages = pages.slice(start - 1, start + maxVisible - 1);
   }
 
+  const getPageUrl = (page: number) => {
+    if (page === 1) return pathPrefix || '/';
+    return `${pathPrefix}?page=${page}`;
+  };
+
   return (
     <div className="flex justify-center items-center gap-2">
       <Button
@@ -31,7 +43,7 @@ export default function Pagination({ currentPage, totalPages }: PaginationProps)
         disabled={currentPage === 1}
         asChild
       >
-        <Link href={currentPage === 2 ? '/' : `/?page=${currentPage - 1}`}>
+        <Link href={getPageUrl(currentPage - 1)}>
           <ChevronLeft className="h-4 w-4" />
           <span className="sr-only">Previous page</span>
         </Link>
@@ -40,7 +52,7 @@ export default function Pagination({ currentPage, totalPages }: PaginationProps)
       {visiblePages[0] > 1 && (
         <>
           <Button variant="outline" size="icon" asChild>
-            <Link href="/">1</Link>
+            <Link href={pathPrefix || '/'}>1</Link>
           </Button>
           {visiblePages[0] > 2 && (
             <span className="text-muted-foreground">...</span>
@@ -55,9 +67,7 @@ export default function Pagination({ currentPage, totalPages }: PaginationProps)
           size="icon"
           asChild
         >
-          <Link href={page === 1 ? '/' : `/?page=${page}`}>
-            {page}
-          </Link>
+          <Link href={getPageUrl(page)}>{page}</Link>
         </Button>
       ))}
 
@@ -67,7 +77,7 @@ export default function Pagination({ currentPage, totalPages }: PaginationProps)
             <span className="text-muted-foreground">...</span>
           )}
           <Button variant="outline" size="icon" asChild>
-            <Link href={`/?page=${totalPages}`}>{totalPages}</Link>
+            <Link href={getPageUrl(totalPages)}>{totalPages}</Link>
           </Button>
         </>
       )}
@@ -78,7 +88,7 @@ export default function Pagination({ currentPage, totalPages }: PaginationProps)
         disabled={currentPage === totalPages}
         asChild
       >
-        <Link href={`/?page=${currentPage + 1}`}>
+        <Link href={getPageUrl(currentPage + 1)}>
           <ChevronRight className="h-4 w-4" />
           <span className="sr-only">Next page</span>
         </Link>

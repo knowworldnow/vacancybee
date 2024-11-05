@@ -1,4 +1,5 @@
-// Base post type with common fields
+import type { Image } from 'sanity';
+
 export interface BasePost {
   _id: string;
   _type: 'post';
@@ -55,7 +56,7 @@ export interface SEO {
 }
 
 // Sanity Image type
-export interface SanityImage {
+export interface SanityImage extends Image {
   _type: 'image';
   asset: {
     _ref: string;
