@@ -1,141 +1,70 @@
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { revalidatePath } from 'next/cache';
 import { type NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import type { SanityDocument } from '@sanity/types';
+import { parseBody } from 'next-sanity/webhook';
+
+// Shared secret that only this route and Sanity knows
+const secret = process.env.SANITY_WEBHOOK_SECRET;
 
 // Define expected webhook payload types
-interface WebhookBody extends SanityDocument {
+interface WebhookBody {
   _type: string;
-  slug?: { current: string };
+  slug?: {
+    current: string;
+  };
   post?: {
     _ref: string;
-    slug: { current: string };
   };
-}
-
-type ParsedWebhookBody = {
-  ids: { created?: string[]; deleted?: string[]; updated?: string[]; };
-  operation: 'create' | 'update' | 'delete';
-  result: WebhookBody;
-}
-
-async function verifyWebhookSignature(body: string, signature: string, secret: string): Promise<boolean> {
-  try {
-    const encoder = new TextEncoder();
-    const key = await crypto.subtle.importKey(
-      'raw',
-      encoder.encode(secret),
-      { name: 'HMAC', hash: 'SHA-256' },
-      false,
-      ['sign']
-    );
-
-    const bodyBuffer = encoder.encode(body);
-    const signatureBuffer = new Uint8Array(
-      signature.match(/.{1,2}/g)?.map(byte => parseInt(byte, 16)) || []
-    );
-
-    const computedSignature = await crypto.subtle.sign(
-      'HMAC',
-      key,
-      bodyBuffer
-    );
-
-    const computedSignatureArray = new Uint8Array(computedSignature);
-    
-    if (signatureBuffer.length !== computedSignatureArray.length) {
-      return false;
-    }
-
-    return signatureBuffer.every((byte, i) => byte === computedSignatureArray[i]);
-  } catch (error) {
-    console.error('Signature verification error:', error);
-    return false;
-  }
-}
-
-async function readBody(readable: ReadableStream): Promise<string> {
-  const chunks = [];
-  const reader = readable.getReader();
-  
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    chunks.push(value);
-  }
-  
-  return new TextDecoder().decode(Buffer.concat(chunks));
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const signature = req.headers.get('x-sanity-signature');
-    const webhookSecret = process.env.SANITY_WEBHOOK_SECRET;
+    const { isValidSignature, body } = await parseBody<WebhookBody>(req, secret);
 
-    if (!signature) {
-      return new NextResponse('Missing signature', { status: 401 });
-    }
-
-    if (!webhookSecret) {
-      return new NextResponse('Missing webhook secret', { status: 500 });
-    }
-
-    const rawBody = await readBody(req.body!);
-    const isValid = await verifyWebhookSignature(rawBody, signature, webhookSecret);
-
-    if (!isValid) {
+    if (!isValidSignature) {
       return new NextResponse('Invalid signature', { status: 401 });
     }
 
-    const parsedBody = JSON.parse(rawBody) as ParsedWebhookBody;
-
-    if (!parsedBody?.result) {
-      return new NextResponse('Invalid webhook body', { status: 400 });
+    if (!body?._type) {
+      return new NextResponse('Bad Request', { status: 400 });
     }
 
-    const { _type, slug } = parsedBody.result;
-
-    // Revalidate tags for different content types
-    switch (_type) {
+    // Handle different content types
+    switch (body._type) {
       case 'post':
-        if (slug?.current) {
-          revalidateTag('posts');
-          revalidateTag(`post-${slug.current}`);
-          revalidatePath(`/${slug.current}`);
+        revalidatePath('/', 'layout'); // Homepage
+        if (body.slug?.current) {
+          revalidatePath(`/${body.slug.current}`); // Individual post page
         }
-        revalidatePath('/', 'layout');
-        break;
-
-      case 'category':
-        if (slug?.current) {
-          revalidateTag('categories');
-          revalidateTag(`category-${slug.current}`);
-          revalidatePath(`/category/${slug.current}`);
-        }
-        revalidatePath('/', 'layout');
         break;
 
       case 'author':
-        if (slug?.current) {
-          revalidateTag('authors');
-          revalidateTag(`author-${slug.current}`);
-          revalidatePath(`/author/${slug.current}`);
+        revalidatePath('/', 'layout');
+        if (body.slug?.current) {
+          revalidatePath(`/author/${body.slug.current}`);
         }
         break;
 
-      case 'page':
-        if (slug?.current) {
-          revalidateTag('pages');
-          revalidateTag(`page-${slug.current}`);
-          revalidatePath(`/${slug.current}`);
+      case 'category':
+        revalidatePath('/', 'layout');
+        if (body.slug?.current) {
+          revalidatePath(`/category/${body.slug.current}`);
         }
         break;
 
       case 'comment':
-        const postSlug = parsedBody.result.post?.slug?.current;
-        if (postSlug) {
-          revalidateTag(`post-${postSlug}`);
-          revalidatePath(`/${postSlug}`);
+        // When a comment is created/updated/deleted, revalidate the associated post page
+        if (body.post?._ref) {
+          // First, get the post slug using the reference
+          const response = await fetch(
+            `https://${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}.api.sanity.io/v${process.env.NEXT_PUBLIC_SANITY_API_VERSION}/data/query/production?query=*[_id=="${body.post._ref}"][0].slug.current`
+          );
+          const data = await response.json();
+          const postSlug = data.result;
+
+          if (postSlug) {
+            revalidatePath(`/${postSlug}`);
+          }
         }
         break;
 
@@ -144,9 +73,10 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({
-      message: 'Revalidation triggered successfully',
-      type: _type,
-      slug: slug?.current || parsedBody.result.post?.slug?.current || null,
+      status: 200,
+      revalidated: true,
+      now: Date.now(),
+      body: body,
     });
   } catch (err: any) {
     console.error('Revalidation error:', err);
@@ -154,5 +84,5 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export const dynamic = 'force-dynamic';
+// Required for edge runtime
 export const runtime = 'edge';
