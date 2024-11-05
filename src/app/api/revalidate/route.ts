@@ -20,13 +20,6 @@ type ParsedWebhookBody = {
   result: WebhookBody;
 }
 
-// Disable body parsing to get raw body for signature verification
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
 function verifyWebhookSignature(body: string, signature: string, secret: string): boolean {
   const hmac = createHmac('sha256', secret);
   const computedSignature = hmac.update(body).digest('hex');
@@ -132,3 +125,7 @@ export async function POST(req: NextRequest) {
     return new NextResponse(err.message, { status: 500 });
   }
 }
+
+// Use route segment config instead of export config
+export const dynamic = 'force-dynamic';
+export const runtime = 'edge';
