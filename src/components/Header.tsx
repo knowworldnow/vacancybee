@@ -1,33 +1,21 @@
+// src/components/Header.tsx
 import Link from 'next/link';
+import { ThemeToggle } from './ThemeToggle';
+import SearchDialog from './SearchDialog';
 
 export default function Header() {
   return (
-    <header className="bg-white shadow">
-      <div className="container mx-auto px-4 py-6">
-        <div className="flex justify-between items-center">
-          <Link href="/" className="text-2xl font-bold text-gray-800">
-            VacancyBee
-          </Link>
-          
-          <nav>
-            <ul className="flex space-x-6">
-              <li>
-                <Link href="/" className="text-gray-600 hover:text-gray-900">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link href="/categories" className="text-gray-600 hover:text-gray-900">
-                  Categories
-                </Link>
-              </li>
-              <li>
-                <Link href="/about" className="text-gray-600 hover:text-gray-900">
-                  About
-                </Link>
-              </li>
-            </ul>
-          </nav>
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-14 items-center justify-between">
+        {/* Left side - Site Title */}
+        <Link href="/" className="text-2xl font-bold">
+          VacancyBee
+        </Link>
+
+        {/* Right side - Search and Theme Toggle */}
+        <div className="flex items-center gap-4">
+          <SearchDialog />
+          <ThemeToggle />
         </div>
       </div>
     </header>
