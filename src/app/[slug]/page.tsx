@@ -5,12 +5,11 @@ import { PortableText } from '@portabletext/react';
 import { getPost, urlForImage } from '@/lib/sanity';
 import { portableTextComponents } from '@/lib/portableTextComponents';
 import { Card } from '@/components/ui/card';
-import TableOfContents from '@/components/TableOfContents';
-import RecentPosts from '@/components/RecentPosts';
-import SocialShare from '@/components/SocialShare';
 import FAQSection from '@/components/FAQSection';
 import Comments from '@/components/Comments';
 import RelatedPosts from '@/components/RelatedPosts';
+import SocialShare from '@/components/SocialShare';
+import type { Post } from '@/lib/types';
 
 type Props = {
   params: { slug: string };
@@ -105,11 +104,26 @@ export default async function PostPage({ params }: Props) {
         <aside className="hidden lg:block lg:col-span-3">
           <div className="sticky top-24 space-y-8">
             <Card className="p-6">
-              <TableOfContents />
-            </Card>
-
-            <Card className="p-6">
-              <RecentPosts posts={post.recentPosts || []} />
+              <div className="prose prose-sm dark:prose-invert">
+                <h3>About the Author</h3>
+                <div className="flex items-center gap-4 mb-4">
+                  {post.author.image && (
+                    <Image
+                      src={urlForImage(post.author.image).url()}
+                      alt={post.author.name}
+                      width={64}
+                      height={64}
+                      className="rounded-full"
+                    />
+                  )}
+                  <div>
+                    <h4 className="font-semibold">{post.author.name}</h4>
+                  </div>
+                </div>
+                {post.author.bio && (
+                  <PortableText value={post.author.bio} />
+                )}
+              </div>
             </Card>
           </div>
         </aside>

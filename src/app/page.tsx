@@ -1,9 +1,4 @@
-import Link from 'next/link';
-import Image from 'next/image';
 import { client } from '@/sanity/lib/client';
-import { urlForImage } from '@/sanity/lib/image';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import FeaturedPosts from '@/components/FeaturedPosts';
 import CategoryList from '@/components/CategoryList';
 import type { BasePost, Category } from '@/lib/types';

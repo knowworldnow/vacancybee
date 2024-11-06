@@ -11,18 +11,17 @@ export interface BasePost {
   excerpt: string;
   publishedAt: string;
   categories: Category[];
+  viewCount?: number;
 }
 
 // Full Post type extending BasePost
 export interface Post extends BasePost {
   author: Author;
   body: PortableTextBlock[];
-  viewCount: number;
-  popularPosts?: BasePost[];
-  relatedPosts?: BasePost[];
   faqs?: FAQ[];
   comments?: Comment[];
   seo?: SEO;
+  relatedPosts?: BasePost[];
 }
 
 // Author type
@@ -34,6 +33,11 @@ export interface Author {
   image?: SanityImage;
   bio?: PortableTextBlock[];
   posts?: BasePost[];
+  social?: {
+    twitter?: string;
+    instagram?: string;
+    website?: string;
+  };
 }
 
 // Category type
@@ -45,6 +49,8 @@ export interface Category {
   description?: string;
   icon?: SanityImage;
   posts?: BasePost[];
+  parentCategory?: Reference;
+  order?: number;
 }
 
 // FAQ type
@@ -52,6 +58,7 @@ export interface FAQ {
   _key: string;
   question: string;
   answer: PortableTextBlock[];
+  order?: number;
 }
 
 // Comment type
@@ -64,6 +71,9 @@ export interface Comment {
   post: Reference;
   approved: boolean;
   createdAt: string;
+  updatedAt?: string;
+  replies?: Comment[];
+  parentComment?: Reference;
 }
 
 // Subscriber type
@@ -73,6 +83,11 @@ export interface Subscriber {
   email: string;
   subscribedAt: string;
   status: 'active' | 'unsubscribed';
+  preferences?: {
+    categories?: string[];
+    frequency?: 'daily' | 'weekly' | 'monthly';
+  };
+  lastEmailSent?: string;
 }
 
 // Sanity Image type
@@ -93,6 +108,7 @@ export interface SanityImage extends Image {
   };
   alt?: string;
   caption?: string;
+  credit?: string;
 }
 
 // Reference type for Sanity references
@@ -108,16 +124,20 @@ export interface SEO {
   keywords?: string[];
   focusKeyphrase?: string;
   ogImage?: SanityImage;
+  noIndex?: boolean;
+  canonicalUrl?: string;
+  structuredData?: Record<string, unknown>;
 }
 
-// Video Embed type
+// Media types
 export interface VideoEmbed {
   _type: 'videoEmbed';
   url: string;
   caption?: string;
+  provider?: 'youtube' | 'vimeo';
+  thumbnail?: SanityImage;
 }
 
-// Audio File type
 export interface AudioFile {
   _type: 'audioFile';
   title?: string;
@@ -126,15 +146,21 @@ export interface AudioFile {
     asset: Reference;
   };
   description?: string;
+  duration?: number;
+  transcript?: string;
 }
 
-// Post Views type
+// Analytics types
 export interface PostViews {
   _id: string;
   _type: 'postViews';
   post: Reference;
   views: number;
   lastUpdated: string;
+  dailyViews?: {
+    date: string;
+    count: number;
+  }[];
 }
 
 // Page type
@@ -145,18 +171,38 @@ export interface Page {
   slug: { current: string };
   content: PortableTextBlock[];
   seo?: SEO;
+  template?: 'default' | 'landing' | 'contact';
+  sections?: PageSection[];
 }
 
-// Schema Response types
-export interface PostsResponse {
-  posts: BasePost[];
+export interface PageSection {
+  _key: string;
+  _type: string;
+  title?: string;
+  content?: PortableTextBlock[];
+  image?: SanityImage;
+  cta?: {
+    text: string;
+    url: string;
+  };
+}
+
+// Response types
+export interface PaginatedResponse<T> {
+  data: T[];
   total: number;
+  page: number;
+  pageSize: number;
   hasMore: boolean;
 }
 
 export interface SearchResponse {
   results: BasePost[];
   total: number;
+  facets?: {
+    categories: { _id: string; title: string; count: number }[];
+    authors: { _id: string; name: string; count: number }[];
+  };
 }
 
 // API Response types
@@ -164,16 +210,31 @@ export interface ApiResponse<T> {
   success: boolean;
   data?: T;
   error?: string;
+  message?: string;
+  statusCode?: number;
 }
 
-export interface CommentResponse {
-  success: boolean;
+export interface CommentResponse extends ApiResponse<Comment> {
   comment?: Comment;
-  error?: string;
 }
 
-export interface SubscribeResponse {
-  success: boolean;
+export interface SubscribeResponse extends ApiResponse<Subscriber> {
   subscriber?: Subscriber;
-  error?: string;
+}
+
+// Form types
+export interface ContactFormData {
+  name: string;
+  email: string;
+  subject?: string;
+  message: string;
+  newsletter?: boolean;
+}
+
+export interface NewsletterFormData {
+  email: string;
+  preferences?: {
+    categories?: string[];
+    frequency?: 'daily' | 'weekly' | 'monthly';
+  };
 }
