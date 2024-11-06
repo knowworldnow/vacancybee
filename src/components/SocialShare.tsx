@@ -7,7 +7,6 @@ import {
   Linkedin,
   Mail,
   Link as LinkIcon,
-  LucideIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
@@ -31,11 +30,44 @@ const PinterestIcon = () => (
   </svg>
 );
 
-type ShareLink = {
-  name: string;
-  icon: LucideIcon | (() => JSX.Element);
-  url: string;
-};
+const shareLinks = [
+  {
+    name: 'Facebook',
+    icon: Facebook,
+    url: (encodedUrl: string, encodedTitle: string) => 
+      `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
+  },
+  {
+    name: 'Twitter',
+    icon: Twitter,
+    url: (encodedUrl: string, encodedTitle: string) => 
+      `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`,
+  },
+  {
+    name: 'LinkedIn',
+    icon: Linkedin,
+    url: (encodedUrl: string, encodedTitle: string) => 
+      `https://www.linkedin.com/shareArticle?mini=true&url=${encodedUrl}&title=${encodedTitle}`,
+  },
+  {
+    name: 'WhatsApp',
+    icon: WhatsAppIcon,
+    url: (encodedUrl: string, encodedTitle: string) => 
+      `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`,
+  },
+  {
+    name: 'Pinterest',
+    icon: PinterestIcon,
+    url: (encodedUrl: string, encodedTitle: string) => 
+      `https://pinterest.com/pin/create/button/?url=${encodedUrl}&description=${encodedTitle}`,
+  },
+  {
+    name: 'Email',
+    icon: Mail,
+    url: (encodedUrl: string, encodedTitle: string) => 
+      `mailto:?subject=${encodedTitle}&body=${encodedUrl}`,
+  },
+];
 
 export default function SocialShare({
   url,
@@ -68,39 +100,6 @@ export default function SocialShare({
   const encodedUrl = encodeURIComponent(url);
   const encodedTitle = encodeURIComponent(title);
 
-  const shareLinks: ShareLink[] = [
-    {
-      name: 'Facebook',
-      icon: Facebook,
-      url: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
-    },
-    {
-      name: 'Twitter',
-      icon: Twitter,
-      url: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`,
-    },
-    {
-      name: 'LinkedIn',
-      icon: Linkedin,
-      url: `https://www.linkedin.com/shareArticle?mini=true&url=${encodedUrl}&title=${encodedTitle}`,
-    },
-    {
-      name: 'WhatsApp',
-      icon: WhatsAppIcon,
-      url: `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`,
-    },
-    {
-      name: 'Pinterest',
-      icon: PinterestIcon,
-      url: `https://pinterest.com/pin/create/button/?url=${encodedUrl}&description=${encodedTitle}`,
-    },
-    {
-      name: 'Email',
-      icon: Mail,
-      url: `mailto:?subject=${encodedTitle}&body=${encodedUrl}`,
-    },
-  ];
-
   const containerClasses = orientation === 'vertical'
     ? 'flex-col fixed left-4 top-1/2 transform -translate-y-1/2 z-10 transition-opacity duration-300'
     : 'flex-row justify-center';
@@ -119,17 +118,15 @@ export default function SocialShare({
           key={link.name}
           variant="outline"
           size="icon"
-          onClick={() => window.open(link.url, '_blank', 'noopener,noreferrer')}
+          onClick={() => window.open(link.url(encodedUrl, encodedTitle), '_blank', 'noopener,noreferrer')}
           title={`Share on ${link.name}`}
           className="bg-background hover:bg-accent"
         >
           {typeof link.icon === 'function' ? (
-            link.icon === WhatsAppIcon || link.icon === PinterestIcon ? (
-              <link.icon />
-            ) : (
-              <link.icon className="h-4 w-4" />
-            )
-          ) : null}
+            <link.icon />
+          ) : (
+            <link.icon className="h-4 w-4" />
+          )}
           <span className="sr-only">Share on {link.name}</span>
         </Button>
       ))}
