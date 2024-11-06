@@ -88,24 +88,26 @@ export default function SocialShare({
   };
 
   const containerClasses = orientation === 'vertical'
-    ? 'flex-col transition-opacity duration-300 fixed top-1/2 transform -translate-y-1/2'
-    : 'flex-row';
+    ? 'flex-col fixed left-4 top-1/2 transform -translate-y-1/2 z-10 transition-opacity duration-300'
+    : 'flex-row justify-center';
 
   const visibilityClasses = orientation === 'vertical'
-    ? visible ? 'opacity-100' : 'opacity-0'
+    ? visible ? 'opacity-100' : 'opacity-0 pointer-events-none'
     : '';
 
   return (
     <div
       className={`flex gap-2 ${containerClasses} ${visibilityClasses}`}
+      aria-label="Share this article"
     >
       {shareLinks.map((link) => (
         <Button
           key={link.name}
           variant="outline"
           size="icon"
-          onClick={() => window.open(link.url, '_blank')}
+          onClick={() => window.open(link.url, '_blank', 'noopener,noreferrer')}
           title={`Share on ${link.name}`}
+          className="bg-background hover:bg-accent"
         >
           <link.icon className="h-4 w-4" />
           <span className="sr-only">Share on {link.name}</span>
@@ -116,6 +118,7 @@ export default function SocialShare({
         size="icon"
         onClick={copyToClipboard}
         title="Copy link"
+        className="bg-background hover:bg-accent"
       >
         <LinkIcon className="h-4 w-4" />
         <span className="sr-only">Copy link</span>

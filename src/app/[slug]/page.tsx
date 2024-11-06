@@ -12,6 +12,7 @@ import RecentPosts from '@/components/RecentPosts';
 import FAQSection from '@/components/FAQSection';
 import Comments from '@/components/Comments';
 import RelatedPosts from '@/components/RelatedPosts';
+import SocialShare from '@/components/SocialShare';
 import { generateArticleSchema, generateFAQSchema } from '@/lib/schema';
 
 type Props = {
@@ -55,7 +56,7 @@ export default async function PostPage({ params }: Props) {
     image: ogImage || '',
     url,
     publishedTime: post.publishedAt,
-    modifiedTime: post.publishedAt, // Use published time if no modified time available
+    modifiedTime: post.publishedAt,
     authorName: post.author.name,
     authorUrl: `/author/${post.author.slug.current}`,
   });
@@ -159,12 +160,17 @@ export default async function PostPage({ params }: Props) {
             </div>
           )}
 
+          {/* Social Share - Mobile */}
+          <div className="lg:hidden mb-12">
+            <SocialShare url={url} title={post.title} orientation="horizontal" />
+          </div>
+
           {/* Comments */}
           <Comments postId={post._id} />
         </article>
 
-        {/* Sidebar */}
-        <aside className="lg:col-span-4">
+        {/* Sidebar - Hidden on mobile */}
+        <aside className="hidden lg:block lg:col-span-4">
           <div className="sticky top-24 space-y-8">
             {/* Author Card */}
             <Card className="p-6">
@@ -204,6 +210,11 @@ export default async function PostPage({ params }: Props) {
             <Card className="p-6">
               <RecentPosts limit={5} currentPostId={post._id} />
             </Card>
+
+            {/* Social Share - Desktop */}
+            <div className="sticky top-24">
+              <SocialShare url={url} title={post.title} orientation="vertical" />
+            </div>
           </div>
         </aside>
       </div>

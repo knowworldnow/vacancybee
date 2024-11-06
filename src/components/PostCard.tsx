@@ -15,16 +15,16 @@ export default function PostCard({ post }: PostCardProps) {
       className="group block border rounded-lg overflow-hidden hover:shadow-lg transition-shadow bg-card"
     >
       {post.mainImage && (
-        <div className="relative aspect-[3/2]">
+        <div className="relative aspect-[3/2] w-full">
           <Image
             src={urlForImage(post.mainImage)
-              .width(800)
-              .height(533)
+              .width(1200)
+              .height(800)
               .quality(90)
               .url()}
             alt={post.title}
             fill
-            className="object-cover transition-transform group-hover:scale-105 duration-300"
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         </div>
@@ -37,9 +37,7 @@ export default function PostCard({ post }: PostCardProps) {
           {post.excerpt}
         </p>
         <time className="text-sm text-muted-foreground">
-          {formatDistanceToNow(new Date(post.publishedAt), {
-            addSuffix: true
-          })}
+          {formatDistanceToNow(new Date(post.publishedAt), { addSuffix: true })}
         </time>
       </div>
     </Link>
