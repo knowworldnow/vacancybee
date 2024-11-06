@@ -12,6 +12,12 @@ import {
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 
+interface SocialShareProps {
+  url: string;
+  title: string;
+  orientation?: 'vertical' | 'horizontal';
+}
+
 // Custom icon components
 const WhatsAppIcon = () => (
   <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor">
@@ -25,17 +31,11 @@ const PinterestIcon = () => (
   </svg>
 );
 
-interface ShareLink {
+type ShareLink = {
   name: string;
   icon: LucideIcon | (() => JSX.Element);
   url: string;
-}
-
-interface SocialShareProps {
-  url: string;
-  title: string;
-  orientation?: 'vertical' | 'horizontal';
-}
+};
 
 export default function SocialShare({
   url,
