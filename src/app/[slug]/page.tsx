@@ -9,7 +9,6 @@ import FAQSection from '@/components/FAQSection';
 import Comments from '@/components/Comments';
 import RelatedPosts from '@/components/RelatedPosts';
 import SocialShare from '@/components/SocialShare';
-import type { Post } from '@/lib/types';
 
 type Props = {
   params: { slug: string };
@@ -89,12 +88,14 @@ export default async function PostPage({ params }: Props) {
           </div>
 
           {/* Related Posts */}
-          <div className="mb-12">
-            <RelatedPosts 
-              currentPostId={post._id}
-              categories={post.categories.map(cat => cat._id)}
-            />
-          </div>
+          {post.relatedPosts && post.relatedPosts.length > 0 && (
+            <div className="mb-12">
+              <RelatedPosts 
+                currentPostId={post._id}
+                categories={post.categories.map(cat => cat._id)}
+              />
+            </div>
+          )}
 
           {/* Comments Section */}
           <Comments postId={post._id} />
