@@ -1,5 +1,14 @@
 import { NextResponse } from 'next/server';
-import { client } from '@/sanity/lib/client';
+import { createClient } from '@sanity/client';
+
+// Create a new client with the token
+const client = createClient({
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '',
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || '',
+  apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION || '',
+  token: process.env.SANITY_API_TOKEN,
+  useCdn: false,
+});
 
 export async function POST(request: Request) {
   try {
@@ -38,7 +47,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      message: 'Comment submitted successfully',
+      message: 'Comment submitted successfully and awaiting moderation',
       comment: newComment,
     });
   } catch (error: any) {
