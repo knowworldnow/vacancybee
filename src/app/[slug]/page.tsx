@@ -2,12 +2,15 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { PortableText } from '@portabletext/react';
-import { getPost, urlForFeaturedImage } from '@/lib/sanity';
+import { getPost, urlForImage } from '@/lib/sanity';
 import { portableTextComponents } from '@/lib/portableTextComponents';
 import { Card } from '@/components/ui/card';
 import TableOfContents from '@/components/TableOfContents';
 import RecentPosts from '@/components/RecentPosts';
 import SocialShare from '@/components/SocialShare';
+import FAQSection from '@/components/FAQSection';
+import Comments from '@/components/Comments';
+import RelatedPosts from '@/components/RelatedPosts';
 
 type Props = {
   params: { slug: string };
@@ -57,7 +60,7 @@ export default async function PostPage({ params }: Props) {
           {post.mainImage && (
             <div className="relative aspect-[3/2] mb-8">
               <Image
-                src={urlForFeaturedImage(post.mainImage).url()}
+                src={urlForImage(post.mainImage).url()}
                 alt={post.title}
                 fill
                 className="object-cover rounded-lg"
@@ -74,10 +77,28 @@ export default async function PostPage({ params }: Props) {
             />
           </div>
 
+          {/* FAQ Section */}
+          {post.faqs && post.faqs.length > 0 && (
+            <div className="mb-12">
+              <FAQSection faqs={post.faqs} />
+            </div>
+          )}
+
           {/* Social Share - Mobile */}
           <div className="lg:hidden mb-12">
             <SocialShare url={url} title={post.title} orientation="horizontal" />
           </div>
+
+          {/* Related Posts */}
+          <div className="mb-12">
+            <RelatedPosts 
+              currentPostId={post._id}
+              categories={post.categories.map(cat => cat._id)}
+            />
+          </div>
+
+          {/* Comments Section */}
+          <Comments postId={post._id} />
         </article>
 
         {/* Sidebar - Desktop/Tablet */}

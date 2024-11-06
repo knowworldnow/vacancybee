@@ -1,5 +1,7 @@
 import type { Image } from 'sanity';
+import type { PortableTextBlock } from '@portabletext/types';
 
+// Base Post type with essential fields
 export interface BasePost {
   _id: string;
   _type: 'post';
@@ -8,16 +10,18 @@ export interface BasePost {
   mainImage: SanityImage;
   excerpt: string;
   publishedAt: string;
+  categories: Category[];
 }
 
-// Full post type extending BasePost
+// Full Post type extending BasePost
 export interface Post extends BasePost {
   author: Author;
   body: PortableTextBlock[];
-  categories: Category[];
   viewCount: number;
-  recentPosts?: BasePost[];
+  popularPosts?: BasePost[];
+  relatedPosts?: BasePost[];
   faqs?: FAQ[];
+  comments?: Comment[];
   seo?: SEO;
 }
 
@@ -29,6 +33,7 @@ export interface Author {
   slug: { current: string };
   image?: SanityImage;
   bio?: PortableTextBlock[];
+  posts?: BasePost[];
 }
 
 // Category type
@@ -39,29 +44,41 @@ export interface Category {
   slug: { current: string };
   description?: string;
   icon?: SanityImage;
+  posts?: BasePost[];
 }
 
 // FAQ type
 export interface FAQ {
+  _key: string;
   question: string;
   answer: PortableTextBlock[];
 }
 
-// SEO type
-export interface SEO {
-  metaTitle?: string;
-  metaDescription?: string;
-  keywords?: string[];
-  focusKeyphrase?: string;
+// Comment type
+export interface Comment {
+  _id: string;
+  _type: 'comment';
+  name: string;
+  email: string;
+  comment: string;
+  post: Reference;
+  approved: boolean;
+  createdAt: string;
+}
+
+// Subscriber type
+export interface Subscriber {
+  _id: string;
+  _type: 'subscriber';
+  email: string;
+  subscribedAt: string;
+  status: 'active' | 'unsubscribed';
 }
 
 // Sanity Image type
 export interface SanityImage extends Image {
   _type: 'image';
-  asset: {
-    _ref: string;
-    _type: 'reference';
-  };
+  asset: Reference;
   hotspot?: {
     x: number;
     y: number;
@@ -78,46 +95,19 @@ export interface SanityImage extends Image {
   caption?: string;
 }
 
-// Portable Text Block type
-export interface PortableTextBlock {
-  _key: string;
-  _type: 'block';
-  children: {
-    _key: string;
-    _type: 'span';
-    marks: string[];
-    text: string;
-  }[];
-  markDefs: {
-    _key: string;
-    _type: string;
-    href?: string;
-  }[];
-  style: string;
+// Reference type for Sanity references
+export interface Reference {
+  _ref: string;
+  _type: 'reference';
 }
 
-// Comment type
-export interface Comment {
-  _id: string;
-  _type: 'comment';
-  name: string;
-  email: string;
-  comment: string;
-  post: {
-    _ref: string;
-    _type: 'reference';
-  };
-  approved: boolean;
-  createdAt: string;
-}
-
-// Subscriber type
-export interface Subscriber {
-  _id: string;
-  _type: 'subscriber';
-  email: string;
-  subscribedAt: string;
-  status: 'active' | 'unsubscribed';
+// SEO type
+export interface SEO {
+  metaTitle?: string;
+  metaDescription?: string;
+  keywords?: string[];
+  focusKeyphrase?: string;
+  ogImage?: SanityImage;
 }
 
 // Video Embed type
@@ -133,10 +123,7 @@ export interface AudioFile {
   title?: string;
   file: {
     _type: 'file';
-    asset: {
-      _ref: string;
-      _type: 'reference';
-    };
+    asset: Reference;
   };
   description?: string;
 }
@@ -145,10 +132,7 @@ export interface AudioFile {
 export interface PostViews {
   _id: string;
   _type: 'postViews';
-  post: {
-    _ref: string;
-    _type: 'reference';
-  };
+  post: Reference;
   views: number;
   lastUpdated: string;
 }
@@ -161,4 +145,35 @@ export interface Page {
   slug: { current: string };
   content: PortableTextBlock[];
   seo?: SEO;
+}
+
+// Schema Response types
+export interface PostsResponse {
+  posts: BasePost[];
+  total: number;
+  hasMore: boolean;
+}
+
+export interface SearchResponse {
+  results: BasePost[];
+  total: number;
+}
+
+// API Response types
+export interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+}
+
+export interface CommentResponse {
+  success: boolean;
+  comment?: Comment;
+  error?: string;
+}
+
+export interface SubscribeResponse {
+  success: boolean;
+  subscriber?: Subscriber;
+  error?: string;
 }

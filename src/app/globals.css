@@ -48,19 +48,34 @@
     --ring: 224.3 76.3% 48%;
   }
 }
-
+ 
 @layer base {
   * {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
   }
 }
 
-/* Add custom utilities */
-.main-container {
-  @apply container mx-auto px-4 sm:px-6 lg:px-8;
+@layer components {
+  .main-container {
+    @apply container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl;
+  }
+
+  .link {
+    @apply text-primary hover:text-primary/80 transition-colors;
+  }
+
+  .card-hover {
+    @apply hover:shadow-lg transition-shadow duration-200;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
 }
 
 /* Typography styles for content */
@@ -68,18 +83,87 @@
   @apply max-w-none;
 }
 
+.prose h1 {
+  @apply text-4xl font-bold mt-8 mb-4 tracking-tight;
+}
+
 .prose h2 {
-  @apply text-3xl font-bold mt-8 mb-4;
+  @apply text-3xl font-bold mt-8 mb-4 tracking-tight;
 }
 
 .prose h3 {
   @apply text-2xl font-bold mt-6 mb-3;
 }
 
+.prose h4 {
+  @apply text-xl font-semibold mt-6 mb-3;
+}
+
 .prose p {
-  @apply mb-4;
+  @apply mb-4 leading-relaxed;
+}
+
+.prose a {
+  @apply text-primary hover:text-primary/80 transition-colors;
+}
+
+.prose blockquote {
+  @apply border-l-4 border-primary/20 pl-4 italic my-6;
+}
+
+.prose ul {
+  @apply list-disc list-inside mb-4;
+}
+
+.prose ol {
+  @apply list-decimal list-inside mb-4;
 }
 
 .prose img {
-  @apply rounded-lg;
+  @apply rounded-lg my-8;
+}
+
+.prose pre {
+  @apply bg-muted p-4 rounded-lg overflow-x-auto my-6;
+}
+
+.prose code {
+  @apply bg-muted px-1.5 py-0.5 rounded text-sm;
+}
+
+/* Dark mode adjustments */
+.dark .prose {
+  @apply text-foreground;
+}
+
+.dark .prose a {
+  @apply text-primary hover:text-primary/80;
+}
+
+.dark .prose blockquote {
+  @apply border-primary/30;
+}
+
+.dark .prose code {
+  @apply bg-muted text-foreground;
+}
+
+.dark .prose pre {
+  @apply bg-muted;
+}
+
+/* Animation utilities */
+.animate-in {
+  animation: animate-in 0.5s ease-out;
+}
+
+@keyframes animate-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
