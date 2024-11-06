@@ -1,19 +1,55 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { formatDistanceToNow } from 'date-fns';
-import { urlForImage } from '@/lib/sanity';
+import { urlForImage } from '@/sanity/lib/image';
+import { client } from '@/sanity/lib/client';
 import type { BasePost } from '@/lib/types';
 
 interface RecentPostsProps {
-  posts: BasePost[];
+  limit?: number;
+  currentPostId?: string;
 }
 
-export default function RecentPosts({ posts }: RecentPostsProps) {
+async function getRecentPosts(limit: number = 5, currentPostId?: string) {
+  const query = currentPostId 
+    ? `*[_type == "post" && _id != $currentPostId] | order(publishedAt desc)[0...$limit] {
+        _id,
+        title,
+        slug,
+        mainImage,
+        excerpt,
+        publishedAt,
+        categories[]->{
+          _id,
+          title,
+          slug
+        }
+      }`
+    : `*[_type == "post"] | order(publishedAt desc)[0...$limit] {
+        _id,
+        title,
+        slug,
+        mainImage,
+        excerpt,
+        publishedAt,
+        categories[]->{
+          _id,
+          title,
+          slug
+        }
+      }`;
+
+  return client.fetch(query, { limit: limit - 1, currentPostId });
+}
+
+export default async function RecentPosts({ limit = 5, currentPostId }: RecentPostsProps) {
+  const posts = await getRecentPosts(limit, currentPostId);
+
   return (
     <div className="space-y-6">
       <h2 className="font-semibold">Recent Posts</h2>
       <div className="space-y-4">
-        {posts.map((post) => (
+        {posts.map((post: BasePost) => (
           <Link
             key={post._id}
             href={`/${post.slug.current}`}
