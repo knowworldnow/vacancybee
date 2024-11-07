@@ -1,14 +1,22 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { urlForImage } from './sanity';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+  TableCaption,
+} from '@/components/ui/table';
 
 export const portableTextComponents = {
   types: {
     image: ({ value }: any) => {
-      // For body images, maintain original aspect ratio
       return (
         <figure className="my-8">
-          <div className="relative w-full">
+          <div className="relative w-full overflow-hidden rounded-lg border shadow-sm">
             <Image
               src={urlForImage(value)
                 .format('webp')
@@ -17,23 +25,49 @@ export const portableTextComponents = {
               alt={value.alt || ' '}
               width={1200}
               height={value.hotspot ? Math.floor(1200 / value.hotspot.aspect) : 800}
-              className="rounded-lg"
+              className="transition-transform duration-500 hover:scale-105"
               sizes="(min-width: 1280px) 1200px, 100vw"
             />
           </div>
           {value.caption && (
-            <figcaption className="text-center text-sm text-gray-600 mt-2">
+            <figcaption className="mt-3 text-center text-sm text-muted-foreground">
               {value.caption}
             </figcaption>
           )}
         </figure>
       );
     },
-    code: ({ value }: any) => {
+    table: ({ value }: any) => {
       return (
-        <pre className="bg-gray-800 text-white p-4 rounded-lg overflow-x-auto">
-          <code>{value.code}</code>
-        </pre>
+        <div className="my-8 w-full overflow-hidden rounded-lg border shadow-sm">
+          <Table>
+            {value.caption && (
+              <TableCaption className="px-6 py-4 bg-muted/50 border-t">
+                {value.caption}
+              </TableCaption>
+            )}
+            {value.rows[0]?.cells?.length > 0 && (
+              <TableHeader>
+                <TableRow>
+                  {value.rows[0].cells.map((cell: string, index: number) => (
+                    <TableHead key={index} className="font-semibold">
+                      {cell}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              </TableHeader>
+            )}
+            <TableBody>
+              {value.rows.slice(1).map((row: any, rowIndex: number) => (
+                <TableRow key={rowIndex}>
+                  {row.cells.map((cell: string, cellIndex: number) => (
+                    <TableCell key={cellIndex}>{cell}</TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       );
     },
   },
@@ -46,7 +80,7 @@ export const portableTextComponents = {
           href={value.href} 
           rel={rel} 
           target={target}
-          className="text-blue-600 hover:underline"
+          className="inline-link relative text-primary no-underline transition-all duration-200 hover:text-primary"
         >
           {children}
         </Link>
@@ -55,29 +89,53 @@ export const portableTextComponents = {
   },
   block: {
     h1: ({ children }: any) => (
-      <h1 className="text-4xl font-bold mt-8 mb-4">{children}</h1>
+      <h1 className="scroll-m-20 text-4xl font-bold tracking-tight lg:text-5xl">
+        {children}
+      </h1>
     ),
     h2: ({ children }: any) => (
-      <h2 className="text-3xl font-bold mt-8 mb-4">{children}</h2>
+      <h2 className="scroll-m-20 text-3xl font-bold tracking-tight transition-colors">
+        {children}
+      </h2>
     ),
     h3: ({ children }: any) => (
-      <h3 className="text-2xl font-bold mt-6 mb-4">{children}</h3>
+      <h3 className="scroll-m-20 text-2xl font-bold tracking-tight">
+        {children}
+      </h3>
     ),
     h4: ({ children }: any) => (
-      <h4 className="text-xl font-bold mt-6 mb-4">{children}</h4>
+      <h4 className="scroll-m-20 text-xl font-bold tracking-tight">
+        {children}
+      </h4>
     ),
     blockquote: ({ children }: any) => (
-      <blockquote className="border-l-4 border-gray-200 pl-4 my-4 italic">
-        {children}
-      </blockquote>
+      <blockquote>{children}</blockquote>
+    ),
+    'pull-quote': ({ children }: any) => (
+      <blockquote className="pull-quote">{children}</blockquote>
+    ),
+    normal: ({ children }: any) => (
+      <p className="leading-7 [&:not(:first-child)]:mt-6">{children}</p>
     ),
   },
   list: {
     bullet: ({ children }: any) => (
-      <ul className="list-disc list-inside my-4 space-y-2">{children}</ul>
+      <ul className="my-6 ml-6 list-none space-y-2">{children}</ul>
     ),
     number: ({ children }: any) => (
-      <ol className="list-decimal list-inside my-4 space-y-2">{children}</ol>
+      <ol className="my-6 ml-6 list-none counter-reset-[item] space-y-2">{children}</ol>
+    ),
+  },
+  listItem: {
+    bullet: ({ children }: any) => (
+      <li className="relative pl-8 before:absolute before:left-0 before:top-[0.6em] before:h-1.5 before:w-1.5 before:rounded-full before:bg-primary/60">
+        {children}
+      </li>
+    ),
+    number: ({ children }: any) => (
+      <li className="relative pl-10 counter-increment-[item] before:absolute before:left-0 before:top-0 before:flex before:h-6 before:w-6 before:items-center before:justify-center before:rounded-full before:bg-muted before:text-xs before:font-medium before:text-primary before:content-[counter(item)]">
+        {children}
+      </li>
     ),
   },
 };
