@@ -58,6 +58,12 @@
   }
 }
 
+@layer utilities {
+  .counter-reset-item {
+    counter-reset: item;
+  }
+}
+
 /* Typography styles for content */
 .prose {
   @apply max-w-none;
@@ -166,11 +172,12 @@
 }
 
 .prose ol {
-  @apply my-6 ml-6 list-none counter-reset-[item] space-y-2;
+  @apply my-6 ml-6 list-none counter-reset-item space-y-2;
 }
 
 .prose ol > li {
-  @apply relative pl-10 counter-increment-[item];
+  @apply relative pl-10;
+  counter-increment: item;
 }
 
 .prose ol > li::before {
