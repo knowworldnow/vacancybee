@@ -31,13 +31,17 @@ export interface Author {
   name: string;
   slug: { current: string };
   image?: SanityImage;
+  role?: string;
   bio?: PortableTextBlock[];
-  posts?: BasePost[];
   social?: {
     twitter?: string;
     instagram?: string;
+    facebook?: string;
+    linkedin?: string;
     website?: string;
   };
+  featured?: boolean;
+  postCount?: number;
 }
 
 // Category type
@@ -81,12 +85,11 @@ export interface Subscriber {
   _id: string;
   _type: 'subscriber';
   email: string;
-  subscribedAt: string;
   status: 'active' | 'unsubscribed';
-  preferences?: {
-    categories?: string[];
-    frequency?: 'daily' | 'weekly' | 'monthly';
-  };
+  subscribedAt: string;
+  resubscribedAt?: string;
+  unsubscribedAt?: string;
+  preferences?: NewsletterPreferences;
   lastEmailSent?: string;
 }
 
@@ -237,4 +240,9 @@ export interface NewsletterFormData {
     categories?: string[];
     frequency?: 'daily' | 'weekly' | 'monthly';
   };
+}
+
+export interface NewsletterPreferences {
+  frequency: 'daily' | 'weekly' | 'monthly';
+  categories?: string[];
 }
