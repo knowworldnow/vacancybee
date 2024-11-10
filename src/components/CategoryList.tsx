@@ -13,24 +13,28 @@ interface Category {
 export default function CategoryList({ categories }: { categories: Category[] }) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-      {categories.map((category) => (
-        <Link key={category._id} href={`/category/${category.slug.current}`}>
-          <Card className="p-6 hover:shadow-lg transition-shadow">
-            {category.icon && (
-              <div className="w-16 h-16 mx-auto mb-4">
-                <Image
-                  src={urlForImage(category.icon).url()}
-                  alt={category.title}
-                  width={64}
-                  height={64}
-                  className="object-cover"
-                />
-              </div>
-            )}
-            <h3 className="text-lg font-semibold text-center">{category.title}</h3>
-          </Card>
-        </Link>
-      ))}
+      {categories.map((category) => {
+        const imageUrl = category.icon ? urlForImage(category.icon) : undefined;
+
+        return (
+          <Link key={category._id} href={`/category/${category.slug.current}/`}>
+            <Card className="p-6 hover:shadow-lg transition-shadow">
+              {imageUrl && (
+                <div className="w-16 h-16 mx-auto mb-4 relative bg-muted rounded-lg">
+                  <Image
+                    src={imageUrl.toString()}
+                    alt={category.title}
+                    fill
+                    className="object-contain"
+                    sizes="64px"
+                  />
+                </div>
+              )}
+              <h3 className="text-lg font-semibold text-center">{category.title}</h3>
+            </Card>
+          </Link>
+        );
+      })}
     </div>
   );
 }
