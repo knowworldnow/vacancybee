@@ -59,8 +59,8 @@
 }
 
 @layer utilities {
-  .counter-reset-item {
-    counter-reset: item;
+  .text-balance {
+    text-wrap: balance;
   }
 }
 
@@ -228,12 +228,12 @@
   @apply border-primary/30;
 }
 
-.dark .prose thead {
-  @apply bg-muted/10;
+.dark .prose code {
+  @apply bg-muted text-foreground;
 }
 
-.dark .prose tbody tr:hover {
-  @apply bg-muted/5;
+.dark .prose pre {
+  @apply bg-muted;
 }
 
 /* Animation utilities */

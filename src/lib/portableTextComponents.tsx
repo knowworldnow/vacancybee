@@ -14,7 +14,7 @@ import {
 export const portableTextComponents = {
   types: {
     image: ({ value }: any) => {
-      const imageUrl = value?.asset?._ref ? urlForImage(value) : null;
+      const imageUrl = urlForImage(value);
       
       if (!imageUrl) {
         return null;
@@ -22,17 +22,16 @@ export const portableTextComponents = {
 
       return (
         <figure className="my-8">
-          <div className="relative flex justify-center items-center bg-muted rounded-lg overflow-hidden">
+          <div className="relative flex justify-center items-center">
             <div className="relative w-full max-w-3xl">
-              <div className="aspect-[16/9] relative">
-                <Image
-                  src={imageUrl}
-                  alt={value.alt || ''}
-                  fill
-                  className="object-contain"
-                  sizes="(min-width: 1280px) 768px, (min-width: 1024px) 672px, 100vw"
-                />
-              </div>
+              <Image
+                src={imageUrl}
+                alt={value.alt || ''}
+                width={1200}
+                height={800}
+                className="rounded-lg"
+                priority={true}
+              />
             </div>
           </div>
           {value.caption && (
