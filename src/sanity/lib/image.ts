@@ -6,23 +6,39 @@ const imageBuilder = createImageUrlBuilder({
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || '',
 });
 
-export const urlForImage = (source: Image) => {
+export const urlForImage = (source: Image): string | undefined => {
+  if (!source?.asset?._ref) {
+    return undefined;
+  }
+  
   return imageBuilder?.image(source)
-    .fit('max');
+    .fit('max')
+    .auto('format')
+    .url();
 };
 
-export const urlForFeaturedImage = (source: Image) => {
+export const urlForFeaturedImage = (source: Image): string | undefined => {
+  if (!source?.asset?._ref) {
+    return undefined;
+  }
+
   return imageBuilder?.image(source)
     .width(1200)
     .height(800)
-    .fit('crop')
-    .crop('entropy');
+    .fit('max')
+    .auto('format')
+    .url();
 };
 
-export const urlForCategoryIcon = (source: Image) => {
+export const urlForCategoryIcon = (source: Image): string | undefined => {
+  if (!source?.asset?._ref) {
+    return undefined;
+  }
+
   return imageBuilder?.image(source)
     .width(128)
     .height(128)
-    .fit('crop')
-    .crop('center');
+    .fit('max')
+    .auto('format')
+    .url();
 };

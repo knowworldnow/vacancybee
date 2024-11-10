@@ -14,19 +14,24 @@ import {
 export const portableTextComponents = {
   types: {
     image: ({ value }: any) => {
-      const imageUrl = urlForImage(value).url();
+      const imageUrl = value ? urlForImage(value) : undefined;
       
+      if (!imageUrl) {
+        return null;
+      }
+
       return (
         <figure className="my-8">
           <div className="relative flex justify-center items-center bg-muted rounded-lg">
             <div className="relative w-full max-w-3xl">
               <div className="aspect-[16/9] relative">
                 <Image
-                  src={imageUrl}
+                  src={imageUrl.toString()}
                   alt={value.alt || ' '}
                   fill
                   className="object-contain"
                   sizes="(min-width: 1280px) 768px, (min-width: 1024px) 672px, (min-width: 768px) 100vw, 100vw"
+                  priority={false}
                 />
               </div>
             </div>

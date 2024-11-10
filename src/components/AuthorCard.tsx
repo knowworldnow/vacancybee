@@ -22,14 +22,16 @@ interface AuthorCardProps {
 }
 
 export function AuthorCard({ author }: AuthorCardProps) {
+  const imageUrl = author.image ? urlForImage(author.image) : undefined;
+
   return (
     <Link href={`/author/${author.slug.current}`}>
       <Card className="overflow-hidden hover:shadow-lg transition-shadow">
         <CardContent className="p-6 text-center">
-          {author.image && (
+          {imageUrl && (
             <div className="relative w-24 h-24 mx-auto mb-4 bg-muted rounded-full">
               <Image
-                src={urlForImage(author.image).url()}
+                src={imageUrl.toString()}
                 alt={author.name}
                 fill
                 className="object-cover rounded-full"
