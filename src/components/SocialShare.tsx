@@ -83,7 +83,10 @@ export default function SocialShare({
   useEffect(() => {
     const handleScroll = () => {
       const contentStart = document.querySelector('.prose')?.getBoundingClientRect().top;
-      const contentEnd = document.querySelector('.prose')?.getBoundingClientRect().bottom;
+      const faqSection = document.querySelector('[data-faq-section]');
+      const authorCard = document.querySelector('[data-author-card]');
+      const endElement = authorCard || faqSection;
+      const contentEnd = endElement?.getBoundingClientRect().bottom;
       const windowHeight = window.innerHeight;
       
       if (contentStart && contentEnd) {
@@ -98,7 +101,20 @@ export default function SocialShare({
     window.addEventListener('scroll', handleScroll);
     handleScroll(); // Check initial position
 
-    return () => window.removeEventListener('scroll', handleScroll);
+    // Re-check visibility when FAQ sections are toggled
+    const faqButtons = document.querySelectorAll('[data-faq-button]');
+    faqButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        setTimeout(handleScroll, 100); // Allow time for content to expand
+      });
+    });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      faqButtons.forEach(button => {
+        button.removeEventListener('click', handleScroll);
+      });
+    };
   }, []);
 
   const encodedUrl = encodeURIComponent(url);
@@ -111,6 +127,22 @@ export default function SocialShare({
   const visibilityClasses = orientation === 'vertical'
     ? visible ? 'opacity-100' : 'opacity-0 pointer-events-none'
     : '';
+
+  async function copyToClipboard() {
+    try {
+      await navigator.clipboard.writeText(url);
+      toast({
+        title: 'Link copied!',
+        description: 'The article URL has been copied to your clipboard.',
+      });
+    } catch (err) {
+      toast({
+        title: 'Failed to copy',
+        description: 'Please try again or copy the URL manually.',
+        variant: 'destructive',
+      });
+    }
+  }
 
   return (
     <div
@@ -144,20 +176,4 @@ export default function SocialShare({
       </Button>
     </div>
   );
-
-  async function copyToClipboard() {
-    try {
-      await navigator.clipboard.writeText(url);
-      toast({
-        title: 'Link copied!',
-        description: 'The article URL has been copied to your clipboard.',
-      });
-    } catch (err) {
-      toast({
-        title: 'Failed to copy',
-        description: 'Please try again or copy the URL manually.',
-        variant: 'destructive',
-      });
-    }
-  }
 }

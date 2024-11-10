@@ -27,13 +27,13 @@ export default function FAQSection({ faqs }: FAQSectionProps) {
   );
 
   return (
-    <div className="space-y-6">
+    <div data-faq-section>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
       
-      <h2 className="text-2xl font-bold">Frequently Asked Questions</h2>
+      <h2 className="text-2xl font-bold mb-6">Frequently Asked Questions</h2>
       <div className="space-y-4">
         {faqs.map((faq, index) => (
           <div
@@ -43,6 +43,7 @@ export default function FAQSection({ faqs }: FAQSectionProps) {
             <button
               onClick={() => setOpenIndex(openIndex === index ? null : index)}
               className="w-full flex items-center justify-between p-4 text-left bg-muted/50 hover:bg-muted/80 transition-colors"
+              data-faq-button
             >
               <h3 className="text-lg font-semibold">{faq.question}</h3>
               <ChevronDown 
