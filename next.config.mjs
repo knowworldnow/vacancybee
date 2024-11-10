@@ -8,6 +8,16 @@ const nextConfig = {
         hostname: 'cdn.sanity.io',
       },
     ],
+    unoptimized: process.env.NODE_ENV === 'development',
+  },
+  async redirects() {
+    return [
+      {
+        source: '/post/:slug',
+        destination: '/:slug/',
+        permanent: true,
+      },
+    ];
   },
 };
 

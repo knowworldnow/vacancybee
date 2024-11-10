@@ -14,7 +14,7 @@ import {
 export const portableTextComponents = {
   types: {
     image: ({ value }: any) => {
-      const imageUrl = urlForImage(value);
+      const imageUrl = value?.asset?._ref ? urlForImage(value) : null;
       
       if (!imageUrl) {
         return null;
@@ -31,7 +31,6 @@ export const portableTextComponents = {
                   fill
                   className="object-contain"
                   sizes="(min-width: 1280px) 768px, (min-width: 1024px) 672px, 100vw"
-                  priority={false}
                 />
               </div>
             </div>
@@ -117,9 +116,6 @@ export const portableTextComponents = {
     ),
     blockquote: ({ children }: any) => (
       <blockquote>{children}</blockquote>
-    ),
-    'pull-quote': ({ children }: any) => (
-      <blockquote className="pull-quote">{children}</blockquote>
     ),
     normal: ({ children }: any) => (
       <p className="leading-7 [&:not(:first-child)]:mt-6">{children}</p>
