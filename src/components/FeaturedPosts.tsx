@@ -19,7 +19,7 @@ export default function FeaturedPosts({ posts }: { posts: Post[] }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {posts.map((post) => {
-        const imageUrl = post.mainImage ? urlForImage(post.mainImage) : undefined;
+        const imageUrl = post.mainImage ? urlForImage(post.mainImage)?.url() : undefined;
 
         return (
           <Link key={post._id} href={`/${post.slug.current}`}>

@@ -14,7 +14,7 @@ import {
 export const portableTextComponents = {
   types: {
     image: ({ value }: any) => {
-      const imageUrl = urlForImage(value);
+      const imageUrl = urlForImage(value)?.url();
       
       if (!imageUrl) {
         return null;
@@ -24,10 +24,7 @@ export const portableTextComponents = {
         <figure className="my-8">
           <div className="relative w-full overflow-hidden rounded-lg border shadow-sm">
             <Image
-              src={imageUrl
-                .format('webp')
-                .quality(90)
-                .url()}
+              src={imageUrl}
               alt={value.alt || ' '}
               width={1200}
               height={value.hotspot ? Math.floor(1200 / value.hotspot.aspect) : 800}

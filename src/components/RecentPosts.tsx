@@ -54,7 +54,7 @@ export default async function RecentPosts({ limit = 5, currentPostId }: RecentPo
       <h2 className="font-semibold">Recent Posts</h2>
       <div className="space-y-4">
         {posts.map((post) => {
-          const imageUrl = post.mainImage ? urlForImage(post.mainImage) : undefined;
+          const imageUrl = post.mainImage ? urlForImage(post.mainImage)?.url() : undefined;
 
           return (
             <Link

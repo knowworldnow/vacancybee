@@ -5,7 +5,7 @@ import { PortableText } from '@portabletext/react';
 import { client } from '@/sanity/lib/client';
 import { urlForImage } from '@/sanity/lib/image';
 import PostGrid from '@/components/PostGrid';
-import { SocialLinks } from '@/components/SocialLinks';
+import type { Author } from '@/lib/types';
 
 type Props = {
   params: { slug: string };
@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const author = await getAuthor(params.slug);
   if (!author) return {};
 
-  const imageUrl = author.image ? urlForImage(author.image) : undefined;
+  const imageUrl = author.image ? urlForImage(author.image)?.url() : undefined;
 
   return {
     title: `${author.name} - Author Profile`,
@@ -48,7 +48,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: `${author.name} - Author Profile`,
       description: `Read articles by ${author.name} on VacancyBee`,
-      images: imageUrl ? [imageUrl] : [],
+      images: imageUrl ? [{ url: imageUrl }] : [],
     },
   };
 }
@@ -57,14 +57,14 @@ export default async function AuthorPage({ params }: Props) {
   const author = await getAuthor(params.slug);
   if (!author) notFound();
 
-  const imageUrl = author.image ? urlForImage(author.image) : undefined;
+  const imageUrl = author.image ? urlForImage(author.image)?.url() : undefined;
 
   return (
-    <main className="container py-12">
+    <div className="container py-10">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
           {imageUrl && (
-            <div className="relative w-32 h-32 mx-auto mb-6 bg-muted rounded-full">
+            <div className="relative w-32 h-32 mx-auto mb-6">
               <Image
                 src={imageUrl}
                 alt={author.name}
@@ -77,24 +77,19 @@ export default async function AuthorPage({ params }: Props) {
           )}
           <h1 className="text-4xl font-bold mb-4">{author.name}</h1>
           {author.bio && (
-            <div className="prose prose-lg dark:prose-invert mx-auto mb-6">
+            <div className="prose prose-lg dark:prose-invert mx-auto">
               <PortableText value={author.bio} />
             </div>
           )}
-          {author.social && <SocialLinks social={author.social} />}
         </div>
 
-        {author.posts && author.posts.length > 0 ? (
+        {author.posts && author.posts.length > 0 && (
           <div className="space-y-8">
             <h2 className="text-2xl font-bold">Articles by {author.name}</h2>
             <PostGrid posts={author.posts} />
           </div>
-        ) : (
-          <p className="text-center text-muted-foreground">
-            No articles published yet.
-          </p>
         )}
       </div>
-    </main>
+    </div>
   );
 }
