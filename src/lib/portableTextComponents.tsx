@@ -14,20 +14,22 @@ import {
 export const portableTextComponents = {
   types: {
     image: ({ value }: any) => {
+      const imageUrl = urlForImage(value).url();
+      
       return (
         <figure className="my-8">
-          <div className="relative w-full overflow-hidden rounded-lg border shadow-sm">
-            <Image
-              src={urlForImage(value)
-                .format('webp')
-                .quality(90)
-                .url()}
-              alt={value.alt || ' '}
-              width={1200}
-              height={value.hotspot ? Math.floor(1200 / value.hotspot.aspect) : 800}
-              className="transition-transform duration-500 hover:scale-105"
-              sizes="(min-width: 1280px) 1200px, 100vw"
-            />
+          <div className="relative flex justify-center items-center bg-muted rounded-lg">
+            <div className="relative w-full max-w-3xl">
+              <div className="aspect-[16/9] relative">
+                <Image
+                  src={imageUrl}
+                  alt={value.alt || ' '}
+                  fill
+                  className="object-contain"
+                  sizes="(min-width: 1280px) 768px, (min-width: 1024px) 672px, (min-width: 768px) 100vw, 100vw"
+                />
+              </div>
+            </div>
           </div>
           {value.caption && (
             <figcaption className="mt-3 text-center text-sm text-muted-foreground">

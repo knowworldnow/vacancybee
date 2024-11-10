@@ -8,7 +8,6 @@ const imageBuilder = createImageUrlBuilder({
 
 export const urlForImage = (source: Image) => {
   return imageBuilder?.image(source)
-    .auto('format')
     .fit('max');
 };
 
@@ -16,8 +15,14 @@ export const urlForFeaturedImage = (source: Image) => {
   return imageBuilder?.image(source)
     .width(1200)
     .height(800)
-    .format('webp')
-    .quality(90)
     .fit('crop')
     .crop('entropy');
+};
+
+export const urlForCategoryIcon = (source: Image) => {
+  return imageBuilder?.image(source)
+    .width(128)
+    .height(128)
+    .fit('crop')
+    .crop('center');
 };

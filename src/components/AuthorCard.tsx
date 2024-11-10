@@ -27,9 +27,9 @@ export function AuthorCard({ author }: AuthorCardProps) {
       <Card className="overflow-hidden hover:shadow-lg transition-shadow">
         <CardContent className="p-6 text-center">
           {author.image && (
-            <div className="relative w-24 h-24 mx-auto mb-4">
+            <div className="relative w-24 h-24 mx-auto mb-4 bg-muted rounded-full">
               <Image
-                src={urlForImage(author.image).width(192).height(192).url()}
+                src={urlForImage(author.image).url()}
                 alt={author.name}
                 fill
                 className="object-cover rounded-full"

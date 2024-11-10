@@ -24,16 +24,12 @@ export default function PostGrid({ posts, columns = 3 }: PostGridProps) {
         <Link key={post._id} href={`/${post.slug.current}`}>
           <Card className="h-full hover:shadow-lg transition-shadow">
             {post.mainImage && (
-              <div className="aspect-video relative overflow-hidden">
+              <div className="aspect-video relative bg-muted">
                 <Image
-                  src={urlForImage(post.mainImage)
-                    .width(800)
-                    .height(450)
-                    .quality(90)
-                    .url()}
+                  src={urlForImage(post.mainImage).url()}
                   alt={post.title}
                   fill
-                  className="object-cover transition-transform duration-300 hover:scale-105"
+                  className="object-contain"
                   sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
                 />
               </div>
