@@ -51,9 +51,6 @@ const config: Config = {
           foreground: "hsl(var(--card-foreground))",
         },
       },
-      borderColor: {
-        DEFAULT: "hsl(var(--border))",
-      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
@@ -121,15 +118,8 @@ const config: Config = {
             code: {
               color: 'hsl(var(--foreground))',
               backgroundColor: 'hsl(var(--muted))',
-              borderRadius: '0.25rem',
-              paddingLeft: '0.25rem',
-              paddingRight: '0.25rem',
-            },
-            'a code': {
-              color: 'hsl(var(--primary))',
             },
             pre: {
-              color: 'hsl(var(--foreground))',
               backgroundColor: 'hsl(var(--muted))',
             },
             thead: {

@@ -1,15 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { urlForImage } from '@/sanity/lib/image';
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableHead,
-  TableCell,
-  TableCaption,
-} from '@/components/ui/table';
 
 export const portableTextComponents = {
   types: {
@@ -22,15 +13,14 @@ export const portableTextComponents = {
 
       return (
         <figure className="my-8">
-          <div className="relative flex justify-center items-center">
-            <div className="relative w-full max-w-3xl">
+          <div className="relative flex justify-center">
+            <div className="relative w-full aspect-[16/9] max-w-3xl">
               <Image
                 src={imageUrl}
                 alt={value.alt || ''}
-                width={1200}
-                height={800}
-                className="rounded-lg"
-                priority={true}
+                fill
+                className="object-contain rounded-lg"
+                sizes="(min-width: 1280px) 1200px, 100vw"
               />
             </div>
           </div>
@@ -45,33 +35,35 @@ export const portableTextComponents = {
     table: ({ value }: any) => {
       return (
         <div className="my-8 w-full overflow-hidden rounded-lg border shadow-sm">
-          <Table>
+          <table className="w-full">
             {value.caption && (
-              <TableCaption className="px-6 py-4 bg-muted/50 border-t">
+              <caption className="px-6 py-4 bg-muted/50 border-t">
                 {value.caption}
-              </TableCaption>
+              </caption>
             )}
             {value.rows[0]?.cells?.length > 0 && (
-              <TableHeader>
-                <TableRow>
+              <thead className="bg-muted/50">
+                <tr>
                   {value.rows[0].cells.map((cell: string, index: number) => (
-                    <TableHead key={index} className="font-semibold">
+                    <th key={index} className="px-6 py-4 text-left font-semibold">
                       {cell}
-                    </TableHead>
+                    </th>
                   ))}
-                </TableRow>
-              </TableHeader>
+                </tr>
+              </thead>
             )}
-            <TableBody>
+            <tbody>
               {value.rows.slice(1).map((row: any, rowIndex: number) => (
-                <TableRow key={rowIndex}>
+                <tr key={rowIndex} className="border-t border-border/50">
                   {row.cells.map((cell: string, cellIndex: number) => (
-                    <TableCell key={cellIndex}>{cell}</TableCell>
+                    <td key={cellIndex} className="px-6 py-4">
+                      {cell}
+                    </td>
                   ))}
-                </TableRow>
+                </tr>
               ))}
-            </TableBody>
-          </Table>
+            </tbody>
+          </table>
         </div>
       );
     },
@@ -85,7 +77,7 @@ export const portableTextComponents = {
           href={value.href} 
           rel={rel} 
           target={target}
-          className="inline-link relative text-primary no-underline transition-all duration-200 hover:text-primary"
+          className="text-primary hover:text-primary/80 transition-colors"
         >
           {children}
         </Link>
@@ -99,7 +91,7 @@ export const portableTextComponents = {
       </h1>
     ),
     h2: ({ children }: any) => (
-      <h2 className="scroll-m-20 text-3xl font-bold tracking-tight transition-colors">
+      <h2 className="scroll-m-20 text-3xl font-bold tracking-tight">
         {children}
       </h2>
     ),
@@ -114,7 +106,9 @@ export const portableTextComponents = {
       </h4>
     ),
     blockquote: ({ children }: any) => (
-      <blockquote>{children}</blockquote>
+      <blockquote className="mt-6 border-l-2 border-border pl-6 italic">
+        {children}
+      </blockquote>
     ),
     normal: ({ children }: any) => (
       <p className="leading-7 [&:not(:first-child)]:mt-6">{children}</p>
@@ -125,7 +119,7 @@ export const portableTextComponents = {
       <ul className="my-6 ml-6 list-none space-y-2">{children}</ul>
     ),
     number: ({ children }: any) => (
-      <ol className="my-6 ml-6 list-none counter-reset-[item] space-y-2">{children}</ol>
+      <ol className="my-6 ml-6 list-decimal space-y-2">{children}</ol>
     ),
   },
   listItem: {
@@ -135,7 +129,7 @@ export const portableTextComponents = {
       </li>
     ),
     number: ({ children }: any) => (
-      <li className="relative pl-10 counter-increment-[item] before:absolute before:left-0 before:top-0 before:flex before:h-6 before:w-6 before:items-center before:justify-center before:rounded-full before:bg-muted before:text-xs before:font-medium before:text-primary before:content-[counter(item)]">
+      <li className="relative pl-2">
         {children}
       </li>
     ),
