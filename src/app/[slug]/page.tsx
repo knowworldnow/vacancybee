@@ -93,24 +93,6 @@ export default async function PostPage({ params }: Props) {
           <header className="mb-8">
             <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
             <div className="flex flex-wrap items-center gap-4 text-muted-foreground">
-              {/* Author */}
-              <Link 
-                href={`/author/${post.author.slug.current}`}
-                className="flex items-center gap-2 hover:text-foreground"
-              >
-                {post.author.image && (
-                  <Image
-                    src={urlForImage(post.author.image).url()}
-                    alt={post.author.name}
-                    width={24}
-                    height={24}
-                    className="rounded-full"
-                  />
-                )}
-                <span>{post.author.name}</span>
-              </Link>
-
-              {/* Date */}
               <time dateTime={post.publishedAt}>
                 {new Date(post.publishedAt).toLocaleDateString('en-US', {
                   year: 'numeric',
@@ -119,7 +101,6 @@ export default async function PostPage({ params }: Props) {
                 })}
               </time>
 
-              {/* Categories */}
               <div className="flex flex-wrap gap-2">
                 {post.categories.map(category => (
                   <Link
@@ -160,20 +141,9 @@ export default async function PostPage({ params }: Props) {
             </div>
           )}
 
-          {/* Social Share - Mobile */}
-          <div className="lg:hidden mb-12">
-            <SocialShare url={url} title={post.title} orientation="horizontal" />
-          </div>
-
-          {/* Comments */}
-          <Comments postId={post._id} />
-        </article>
-
-        {/* Sidebar - Hidden on mobile */}
-        <aside className="hidden lg:block lg:col-span-4">
-          <div className="sticky top-24 space-y-8">
-            {/* Author Card */}
-            <Card className="p-6">
+          {/* Author Card */}
+          {post.author && (
+            <Card className="p-6 mb-12">
               <div className="flex items-center gap-4 mb-4">
                 {post.author.image && (
                   <Image
@@ -200,7 +170,20 @@ export default async function PostPage({ params }: Props) {
                 </div>
               )}
             </Card>
+          )}
 
+          {/* Social Share - Mobile */}
+          <div className="lg:hidden mb-12">
+            <SocialShare url={url} title={post.title} orientation="horizontal" />
+          </div>
+
+          {/* Comments */}
+          <Comments postId={post._id} />
+        </article>
+
+        {/* Sidebar */}
+        <aside className="hidden lg:block lg:col-span-4">
+          <div className="sticky top-24 space-y-8">
             {/* Table of Contents */}
             <Card className="p-6">
               <TableOfContents />

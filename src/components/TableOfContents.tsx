@@ -38,9 +38,22 @@ export default function TableOfContents() {
       { rootMargin: '-100px 0px -66% 0px' }
     );
 
-    articleHeadings.forEach((heading) => {
-      const element = document.getElementById(heading.id);
-      if (element) observer.observe(element);
+    const observeElements = () => {
+      articleHeadings.forEach((heading) => {
+        const element = document.getElementById(heading.id);
+        if (element) observer.observe(element);
+      });
+    };
+
+    // Initial observation
+    observeElements();
+
+    // Re-observe when FAQ sections are toggled
+    const faqButtons = document.querySelectorAll('[data-faq-button]');
+    faqButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        setTimeout(observeElements, 100); // Allow time for content to expand
+      });
     });
 
     return () => observer.disconnect();
