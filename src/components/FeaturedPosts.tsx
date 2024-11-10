@@ -22,7 +22,7 @@ export default function FeaturedPosts({ posts }: { posts: Post[] }) {
         const imageUrl = post.mainImage ? urlForImage(post.mainImage) : undefined;
 
         return (
-          <Link key={post._id} href={`/post/${post.slug.current}`}>
+          <Link key={post._id} href={`/${post.slug.current}`}>
             <Card className="h-full hover:shadow-lg transition-shadow">
               {imageUrl && (
                 <div className="aspect-video relative bg-muted">
