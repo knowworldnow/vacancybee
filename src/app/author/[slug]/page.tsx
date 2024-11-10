@@ -40,13 +40,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const author = await getAuthor(params.slug);
   if (!author) return {};
 
+  const imageUrl = author.image ? urlForImage(author.image) : undefined;
+
   return {
     title: `${author.name} - Author Profile`,
     description: `Read articles by ${author.name} on VacancyBee`,
     openGraph: {
       title: `${author.name} - Author Profile`,
       description: `Read articles by ${author.name} on VacancyBee`,
-      images: author.image ? [urlForImage(author.image).url()] : [],
+      images: imageUrl ? [imageUrl] : [],
     },
   };
 }
@@ -55,14 +57,16 @@ export default async function AuthorPage({ params }: Props) {
   const author = await getAuthor(params.slug);
   if (!author) notFound();
 
+  const imageUrl = author.image ? urlForImage(author.image) : undefined;
+
   return (
     <main className="container py-12">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
-          {author.image && (
-            <div className="relative w-32 h-32 mx-auto mb-6">
+          {imageUrl && (
+            <div className="relative w-32 h-32 mx-auto mb-6 bg-muted rounded-full">
               <Image
-                src={urlForImage(author.image).width(256).height(256).url()}
+                src={imageUrl}
                 alt={author.name}
                 fill
                 className="object-cover rounded-full"
