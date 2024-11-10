@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { urlForImage } from './sanity';
+import { urlForImage } from '@/sanity/lib/image';
 import {
   Table,
   TableHeader,
@@ -14,7 +14,7 @@ import {
 export const portableTextComponents = {
   types: {
     image: ({ value }: any) => {
-      const imageUrl = value?.asset?._ref ? urlForImage(value) : undefined;
+      const imageUrl = urlForImage(value);
       
       if (!imageUrl) {
         return null;
@@ -26,11 +26,12 @@ export const portableTextComponents = {
             <div className="relative w-full max-w-3xl">
               <div className="aspect-[16/9] relative">
                 <Image
-                  src={imageUrl.toString()}
+                  src={imageUrl}
                   alt={value.alt || ''}
                   fill
                   className="object-contain"
                   sizes="(min-width: 1280px) 768px, (min-width: 1024px) 672px, 100vw"
+                  priority={false}
                 />
               </div>
             </div>
