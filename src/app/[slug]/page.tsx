@@ -3,8 +3,7 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { PortableText } from '@portabletext/react';
-import { client } from '@/sanity/lib/client';
-import { urlForImage } from '@/sanity/lib/image';
+import { getPost, urlForImage } from '@/lib/sanity';
 import { portableTextComponents } from '@/lib/portableTextComponents';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -20,45 +19,6 @@ type Props = {
   params: { slug: string };
 };
 
-async function getPost(slug: string) {
-  return client.fetch(`
-    *[_type == "post" && slug.current == $slug][0] {
-      _id,
-      title,
-      slug,
-      mainImage {
-        asset->,
-        alt,
-        caption,
-        credit,
-        "dimensions": asset->metadata.dimensions,
-        "lqip": asset->metadata.lqip
-      },
-      excerpt,
-      publishedAt,
-      body,
-      author->{
-        _id,
-        name,
-        slug,
-        image,
-        bio
-      },
-      categories[]->{
-        _id,
-        title,
-        slug
-      },
-      "viewCount": coalesce(
-        *[_type == "postViews" && post._ref == ^._id][0].views,
-        0
-      ),
-      faqs,
-      seo
-    }
-  `, { slug });
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = await getPost(params.slug);
   if (!post) return {};
@@ -66,17 +26,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const ogImage = post.mainImage ? urlForImage(post.mainImage).url() : undefined;
 
   return {
-    title: post.seo?.metaTitle || post.title,
-    description: post.seo?.metaDescription || post.excerpt,
+    title: post.title,
+    description: post.excerpt,
     openGraph: {
-      title: post.seo?.metaTitle || post.title,
-      description: post.seo?.metaDescription || post.excerpt,
+      title: post.title,
+      description: post.excerpt,
       type: 'article',
       publishedTime: post.publishedAt,
       authors: [post.author.name],
-      images: ogImage ? [{ url: ogImage }] : [],
+      images: ogImage ? [ogImage] : [],
     },
-    robots: post.seo?.noIndex ? { index: false } : undefined,
   };
 }
 
@@ -90,7 +49,6 @@ export default async function PostPage({ params }: Props) {
   const url = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://vacancybee.com'}/${params.slug}`;
   const ogImage = post.mainImage ? urlForImage(post.mainImage).url() : undefined;
 
-  // Generate schema markup
   const articleSchema = generateArticleSchema({
     title: post.title,
     description: post.excerpt,
@@ -110,7 +68,6 @@ export default async function PostPage({ params }: Props) {
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Main Content */}
         <article className="lg:col-span-8">
           <header className="mb-8">
             <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
@@ -128,11 +85,8 @@ export default async function PostPage({ params }: Props) {
                   <Link
                     key={category._id}
                     href={`/category/${category.slug.current}`}
-                    className="no-underline"
                   >
-                    <Badge variant="secondary" className="hover:bg-secondary/60">
-                      {category.title}
-                    </Badge>
+                    <Badge variant="secondary">{category.title}</Badge>
                   </Link>
                 ))}
               </div>
@@ -140,29 +94,16 @@ export default async function PostPage({ params }: Props) {
           </header>
 
           {post.mainImage && (
-            <figure className="mb-8">
-              <div className="relative aspect-[3/2]">
-                <Image
-                  src={urlForImage(post.mainImage).url()}
-                  alt={post.mainImage.alt}
-                  fill
-                  className="object-cover rounded-lg"
-                  priority
-                  sizes="(min-width: 1024px) 800px, 100vw"
-                  placeholder={post.mainImage.lqip ? "blur" : "empty"}
-                  blurDataURL={post.mainImage.lqip}
-                />
-              </div>
-              {(post.mainImage.caption || post.mainImage.credit) && (
-                <figcaption className="mt-2 text-sm text-muted-foreground text-center">
-                  {post.mainImage.caption}
-                  {post.mainImage.caption && post.mainImage.credit && ' · '}
-                  {post.mainImage.credit && (
-                    <span className="italic">{post.mainImage.credit}</span>
-                  )}
-                </figcaption>
-              )}
-            </figure>
+            <div className="relative aspect-[3/2] mb-8">
+              <Image
+                src={urlForImage(post.mainImage).url()}
+                alt={post.title}
+                fill
+                className="object-cover rounded-lg"
+                priority
+                sizes="(min-width: 1024px) 800px, 100vw"
+              />
+            </div>
           )}
 
           <div className="prose prose-lg dark:prose-invert max-w-none mb-12">
@@ -172,16 +113,14 @@ export default async function PostPage({ params }: Props) {
             />
           </div>
 
-          {/* FAQs */}
           {post.faqs && post.faqs.length > 0 && (
             <div className="mb-12">
               <FAQSection faqs={post.faqs} />
             </div>
           )}
 
-          {/* Author Card */}
           {post.author && (
-            <Card className="p-6 mb-12" data-author-card>
+            <Card className="p-6 mb-12">
               <div className="flex items-center gap-4 mb-4">
                 {post.author.image && (
                   <Image
@@ -210,29 +149,23 @@ export default async function PostPage({ params }: Props) {
             </Card>
           )}
 
-          {/* Social Share - Mobile */}
           <div className="lg:hidden mb-12">
             <SocialShare url={url} title={post.title} orientation="horizontal" />
           </div>
 
-          {/* Comments */}
           <Comments postId={post._id} />
         </article>
 
-        {/* Sidebar */}
         <aside className="hidden lg:block lg:col-span-4">
           <div className="sticky top-24 space-y-8">
-            {/* Table of Contents */}
             <Card className="p-6">
               <TableOfContents />
             </Card>
 
-            {/* Recent Posts */}
             <Card className="p-6">
               <RecentPosts limit={5} currentPostId={post._id} />
             </Card>
 
-            {/* Social Share - Desktop */}
             <div className="sticky top-24">
               <SocialShare url={url} title={post.title} orientation="vertical" />
             </div>
@@ -240,7 +173,6 @@ export default async function PostPage({ params }: Props) {
         </aside>
       </div>
 
-      {/* Related Posts */}
       <section className="mt-16">
         <RelatedPosts 
           currentPostId={post._id}
