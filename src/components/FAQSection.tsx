@@ -1,3 +1,7 @@
+'use client';
+
+import { useState } from 'react';
+import { ChevronDown } from 'lucide-react';
 import { PortableText } from '@portabletext/react';
 import { generateFAQSchema } from '@/lib/schema';
 
@@ -11,6 +15,8 @@ interface FAQSectionProps {
 }
 
 export default function FAQSection({ faqs }: FAQSectionProps) {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
   // Generate FAQ schema only once
   const faqSchema = generateFAQSchema(
     faqs.map(faq => ({
@@ -39,15 +45,28 @@ export default function FAQSection({ faqs }: FAQSectionProps) {
             key={index}
             className="border rounded-lg overflow-hidden"
           >
-            <div className="p-4 bg-muted/50">
-              <h3 className="text-lg font-semibold">{faq.question}</h3>
-            </div>
-            <div 
-              id={`faq-content-${index}`}
-              className="p-4 prose prose-lg dark:prose-invert"
+            <button
+              onClick={() => setOpenIndex(openIndex === index ? null : index)}
+              className="w-full flex items-center justify-between p-4 text-left bg-muted/50 hover:bg-muted/80 transition-colors"
+              data-faq-button
+              aria-expanded={openIndex === index}
+              aria-controls={`faq-content-${index}`}
             >
-              <PortableText value={faq.answer} />
-            </div>
+              <h3 className="text-lg font-semibold">{faq.question}</h3>
+              <ChevronDown 
+                className={`h-5 w-5 transition-transform duration-200 ${
+                  openIndex === index ? 'transform rotate-180' : ''
+                }`}
+              />
+            </button>
+            {openIndex === index && (
+              <div 
+                id={`faq-content-${index}`}
+                className="p-4 prose prose-lg dark:prose-invert"
+              >
+                <PortableText value={faq.answer} />
+              </div>
+            )}
           </div>
         ))}
       </div>
