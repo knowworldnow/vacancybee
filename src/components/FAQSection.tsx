@@ -13,6 +13,7 @@ interface FAQSectionProps {
 export default function FAQSection({ faqs }: FAQSectionProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
+  // Generate FAQ schema only once
   const faqSchema = generateFAQSchema(
     faqs.map(faq => ({
       question: faq.question,
@@ -44,6 +45,8 @@ export default function FAQSection({ faqs }: FAQSectionProps) {
               onClick={() => setOpenIndex(openIndex === index ? null : index)}
               className="w-full flex items-center justify-between p-4 text-left bg-muted/50 hover:bg-muted/80 transition-colors"
               data-faq-button
+              aria-expanded={openIndex === index}
+              aria-controls={`faq-content-${index}`}
             >
               <h3 className="text-lg font-semibold">{faq.question}</h3>
               <ChevronDown 
@@ -53,7 +56,10 @@ export default function FAQSection({ faqs }: FAQSectionProps) {
               />
             </button>
             {openIndex === index && (
-              <div className="p-4 prose prose-lg dark:prose-invert">
+              <div 
+                id={`faq-content-${index}`}
+                className="p-4 prose prose-lg dark:prose-invert"
+              >
                 <PortableText value={faq.answer} />
               </div>
             )}

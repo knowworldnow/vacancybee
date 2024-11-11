@@ -3,7 +3,8 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { PortableText } from '@portabletext/react';
-import { getPost, urlForImage } from '@/lib/sanity';
+import { client } from '@/sanity/lib/client';
+import { urlForImage } from '@/sanity/lib/image';
 import { portableTextComponents } from '@/lib/portableTextComponents';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -13,11 +14,50 @@ import FAQSection from '@/components/FAQSection';
 import Comments from '@/components/Comments';
 import RelatedPosts from '@/components/RelatedPosts';
 import SocialShare from '@/components/SocialShare';
-import { generateArticleSchema, generateFAQSchema } from '@/lib/schema';
+import { generateArticleSchema } from '@/lib/schema';
 
 type Props = {
   params: { slug: string };
 };
+
+async function getPost(slug: string) {
+  return client.fetch(`
+    *[_type == "post" && slug.current == $slug][0] {
+      _id,
+      title,
+      slug,
+      mainImage {
+        asset->,
+        alt,
+        caption,
+        credit,
+        "dimensions": asset->metadata.dimensions,
+        "lqip": asset->metadata.lqip
+      },
+      excerpt,
+      publishedAt,
+      body,
+      author->{
+        _id,
+        name,
+        slug,
+        image,
+        bio
+      },
+      categories[]->{
+        _id,
+        title,
+        slug
+      },
+      "viewCount": coalesce(
+        *[_type == "postViews" && post._ref == ^._id][0].views,
+        0
+      ),
+      faqs,
+      seo
+    }
+  `, { slug });
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = await getPost(params.slug);
@@ -26,16 +66,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const ogImage = post.mainImage ? urlForImage(post.mainImage).url() : undefined;
 
   return {
-    title: post.title,
-    description: post.excerpt,
+    title: post.seo?.metaTitle || post.title,
+    description: post.seo?.metaDescription || post.excerpt,
     openGraph: {
-      title: post.title,
-      description: post.excerpt,
+      title: post.seo?.metaTitle || post.title,
+      description: post.seo?.metaDescription || post.excerpt,
       type: 'article',
       publishedTime: post.publishedAt,
       authors: [post.author.name],
-      images: ogImage ? [ogImage] : [],
+      images: ogImage ? [{ url: ogImage }] : [],
     },
+    robots: post.seo?.noIndex ? { index: false } : undefined,
   };
 }
 
@@ -61,31 +102,12 @@ export default async function PostPage({ params }: Props) {
     authorUrl: `/author/${post.author.slug.current}`,
   });
 
-  const faqSchema = post.faqs ? generateFAQSchema(
-    post.faqs.map(faq => ({
-      question: faq.question,
-      answer: faq.answer
-        .map(block => 
-          block.children
-            ?.map((child: any) => child.text)
-            .join(' ') || ''
-        )
-        .join(' ')
-    }))
-  ) : null;
-
   return (
     <div className="container py-10">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
-      {faqSchema && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-        />
-      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Main Content */}
@@ -106,8 +128,11 @@ export default async function PostPage({ params }: Props) {
                   <Link
                     key={category._id}
                     href={`/category/${category.slug.current}`}
+                    className="no-underline"
                   >
-                    <Badge variant="secondary">{category.title}</Badge>
+                    <Badge variant="secondary" className="hover:bg-secondary/60">
+                      {category.title}
+                    </Badge>
                   </Link>
                 ))}
               </div>
@@ -115,16 +140,29 @@ export default async function PostPage({ params }: Props) {
           </header>
 
           {post.mainImage && (
-            <div className="relative aspect-[3/2] mb-8">
-              <Image
-                src={urlForImage(post.mainImage).url()}
-                alt={post.title}
-                fill
-                className="object-cover rounded-lg"
-                priority
-                sizes="(min-width: 1024px) 800px, 100vw"
-              />
-            </div>
+            <figure className="mb-8">
+              <div className="relative aspect-[3/2]">
+                <Image
+                  src={urlForImage(post.mainImage).url()}
+                  alt={post.mainImage.alt}
+                  fill
+                  className="object-cover rounded-lg"
+                  priority
+                  sizes="(min-width: 1024px) 800px, 100vw"
+                  placeholder={post.mainImage.lqip ? "blur" : "empty"}
+                  blurDataURL={post.mainImage.lqip}
+                />
+              </div>
+              {(post.mainImage.caption || post.mainImage.credit) && (
+                <figcaption className="mt-2 text-sm text-muted-foreground text-center">
+                  {post.mainImage.caption}
+                  {post.mainImage.caption && post.mainImage.credit && ' · '}
+                  {post.mainImage.credit && (
+                    <span className="italic">{post.mainImage.credit}</span>
+                  )}
+                </figcaption>
+              )}
+            </figure>
           )}
 
           <div className="prose prose-lg dark:prose-invert max-w-none mb-12">
@@ -143,7 +181,7 @@ export default async function PostPage({ params }: Props) {
 
           {/* Author Card */}
           {post.author && (
-            <Card className="p-6 mb-12">
+            <Card className="p-6 mb-12" data-author-card>
               <div className="flex items-center gap-4 mb-4">
                 {post.author.image && (
                   <Image
