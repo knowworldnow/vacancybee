@@ -1,4 +1,6 @@
 // src/components/ui/custom-table.tsx
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -180,3 +182,5 @@ export function CustomTable({
     </div>
   );
 }
+
+export default CustomTable;

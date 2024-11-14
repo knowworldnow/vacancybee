@@ -1,6 +1,7 @@
 // src/lib/portableTextComponents.tsx
 import Image from 'next/image';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { urlForImage } from '@/sanity/lib/image';
 import {
   Table,
@@ -11,7 +12,11 @@ import {
   TableCell,
   TableCaption,
 } from '@/components/ui/table';
-import { CustomTable } from '@/components/ui/custom-table';
+
+// Dynamically import the CustomTable component
+const CustomTable = dynamic(() => import('@/components/ui/custom-table'), {
+  ssr: false // Disable server-side rendering for this component
+});
 
 export const portableTextComponents = {
   types: {
@@ -42,7 +47,6 @@ export const portableTextComponents = {
         </figure>
       );
     },
-    // Replace the existing table component with our new CustomTable
     customTable: ({ value }: any) => {
       return <CustomTable {...value} />;
     },
