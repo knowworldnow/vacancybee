@@ -1,3 +1,4 @@
+// src/lib/portableTextComponents.tsx
 import Image from 'next/image';
 import Link from 'next/link';
 import { urlForImage } from '@/sanity/lib/image';
@@ -10,6 +11,7 @@ import {
   TableCell,
   TableCaption,
 } from '@/components/ui/table';
+import { CustomTable } from '@/components/ui/custom-table';
 
 export const portableTextComponents = {
   types: {
@@ -39,6 +41,10 @@ export const portableTextComponents = {
           )}
         </figure>
       );
+    },
+    // Replace the existing table component with our new CustomTable
+    customTable: ({ value }: any) => {
+      return <CustomTable {...value} />;
     },
     table: ({ value }: any) => {
       return (
