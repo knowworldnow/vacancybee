@@ -18,7 +18,7 @@ const nextConfig = {
       },
     ];
   },
-  // Keep only the necessary experimental features
+  // Remove experimental features that are causing issues
   experimental: {
     optimizePackageImports: ['lucide-react'],
   },

@@ -41,7 +41,7 @@ export default function SearchDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon">
+        <Button className="w-10 h-10 p-0">
           <Search className="h-[1.2rem] w-[1.2rem]" />
           <span className="sr-only">Search posts</span>
         </Button>
