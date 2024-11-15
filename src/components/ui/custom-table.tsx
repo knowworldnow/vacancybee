@@ -1,4 +1,3 @@
-// src/components/ui/custom-table.tsx
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -81,8 +80,8 @@ export function CustomTable({
 
   const getSortIcon = (key: string) => {
     if (sortConfig.key !== key) return null;
-    if (sortConfig.direction === 'asc') return <ChevronUp className="h-4 w-4" />;
-    if (sortConfig.direction === 'desc') return <ChevronDown className="h-4 w-4" />;
+    if (sortConfig.direction === 'asc') return <ChevronUp className="h-5 w-5" />;
+    if (sortConfig.direction === 'desc') return <ChevronDown className="h-5 w-5" />;
     return null;
   };
 
@@ -115,16 +114,19 @@ export function CustomTable({
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  onClick={() => sortData(header)}
-                  className="cursor-pointer group hover:bg-muted/50 transition-colors duration-200"
+                  className="min-w-[3rem]"
                 >
                   <TableHead className="font-semibold">
-                    <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => sortData(header)}
+                      className="w-full min-h-[48px] px-4 py-3 flex items-center justify-between hover:bg-muted/50 transition-colors duration-200 rounded-md"
+                      aria-label={`Sort by ${formatHeader(header)}`}
+                    >
                       <span>{formatHeader(header)}</span>
-                      <span className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="text-muted-foreground ml-2">
                         {getSortIcon(header)}
                       </span>
-                    </div>
+                    </button>
                   </TableHead>
                 </motion.th>
               ))}
@@ -161,10 +163,11 @@ export function CustomTable({
           <button
             onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
-            className="inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium text-muted-foreground rounded-md border border-input hover:bg-accent hover:text-accent-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+            className="min-h-[48px] min-w-[48px] px-4 py-3 inline-flex items-center justify-center space-x-2 text-sm font-medium text-muted-foreground rounded-md border border-input hover:bg-accent hover:text-accent-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label="Previous page"
           >
-            <ChevronLeft className="h-4 w-4" />
-            <span>Previous</span>
+            <ChevronLeft className="h-5 w-5" />
+            <span className="hidden sm:inline">Previous</span>
           </button>
           <span className="text-sm text-muted-foreground">
             Page {currentPage} of {lastPage}
@@ -172,10 +175,11 @@ export function CustomTable({
           <button
             onClick={() => setCurrentPage(prev => Math.min(prev + 1, lastPage))}
             disabled={currentPage === lastPage}
-            className="inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium text-muted-foreground rounded-md border border-input hover:bg-accent hover:text-accent-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+            className="min-h-[48px] min-w-[48px] px-4 py-3 inline-flex items-center justify-center space-x-2 text-sm font-medium text-muted-foreground rounded-md border border-input hover:bg-accent hover:text-accent-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label="Next page"
           >
-            <span>Next</span>
-            <ChevronRight className="h-4 w-4" />
+            <span className="hidden sm:inline">Next</span>
+            <ChevronRight className="h-5 w-5" />
           </button>
         </div>
       )}
