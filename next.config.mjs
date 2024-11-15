@@ -18,8 +18,8 @@ const nextConfig = {
       },
     ];
   },
+  // Keep only the necessary experimental features
   experimental: {
-    optimizeCss: true,
     optimizePackageImports: ['lucide-react'],
   },
 };
