@@ -8,7 +8,6 @@ const nextConfig = {
         hostname: 'cdn.sanity.io',
       },
     ],
-    unoptimized: process.env.NODE_ENV === 'development',
   },
   async redirects() {
     return [
@@ -18,6 +17,10 @@ const nextConfig = {
         permanent: true,
       },
     ];
+  },
+  experimental: {
+    optimizeCss: true,
+    optimizePackageImports: ['lucide-react'],
   },
 };
 

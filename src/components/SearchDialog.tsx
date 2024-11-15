@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -9,55 +9,33 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { client } from '@/lib/sanity';
-import SearchResults from './SearchResults';
-import type { BasePost } from '@/lib/types';
+import dynamic from 'next/dynamic';
+
+const SearchResults = dynamic(() => import('./SearchResults'), { ssr: false });
 
 export default function SearchDialog() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<BasePost[]>([]);
+  const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const searchPosts = async () => {
-      if (!query.trim()) {
-        setResults([]);
-        return;
-      }
+  const searchPosts = useCallback(async () => {
+    if (!query.trim()) {
+      setResults([]);
+      return;
+    }
 
-      setLoading(true);
-      try {
-        const searchQuery = `*[_type == "post" && (
-          title match $searchTerm + "*" ||
-          excerpt match $searchTerm + "*" ||
-          pt::text(body) match $searchTerm + "*"
-        )] | order(publishedAt desc)[0...10] {
-          _id,
-          _type,
-          title,
-          slug,
-          mainImage,
-          excerpt,
-          publishedAt
-        }`;
-
-        const params = {
-          searchTerm: query.toLowerCase()
-        };
-
-        const posts = await client.fetch(searchQuery, params);
-        setResults(posts);
-      } catch (error) {
-        console.error('Search error:', error);
-        setResults([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const debounceTimer = setTimeout(searchPosts, 300);
-    return () => clearTimeout(debounceTimer);
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+      const posts = await res.json();
+      setResults(posts);
+    } catch (error) {
+      console.error('Search error:', error);
+      setResults([]);
+    } finally {
+      setLoading(false);
+    }
   }, [query]);
 
   return (
@@ -75,6 +53,7 @@ export default function SearchDialog() {
             placeholder="Search posts..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            onKeyUp={(e) => e.key === 'Enter' && searchPosts()}
             className="w-full"
             autoFocus
           />
