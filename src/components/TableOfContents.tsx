@@ -25,9 +25,12 @@ export default function TableOfContents() {
         };
       })
       .filter((heading) => {
-        // Exclude "Author" and "Leave a Comment" sections
+        // Exclude "Author", "Leave a Comment", and any author-related sections
         const excludedSections = ['author', 'leave-a-comment'];
-        return !excludedSections.some(section => heading.id.toLowerCase().includes(section));
+        return !excludedSections.some(section => 
+          heading.id.toLowerCase().includes(section) || 
+          heading.text.toLowerCase().includes(section)
+        );
       });
 
     setHeadings(articleHeadings);
