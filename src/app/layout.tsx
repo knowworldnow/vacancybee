@@ -19,10 +19,15 @@ export const metadata: Metadata = {
   keywords: ['celebrity news', 'entertainment news', 'celebrity interviews', 'celebrity updates'],
   authors: [{ name: 'VacancyBee' }],
   creator: 'VacancyBee',
+  metadataBase: new URL('https://vacancybee.com'),
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
     type: 'website',
     locale: 'en_US',
     siteName: 'VacancyBee',
+    url: 'https://vacancybee.com',
   },
   twitter: {
     card: 'summary_large_image',
