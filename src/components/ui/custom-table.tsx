@@ -49,9 +49,9 @@ export function CustomTable({
   return (
     <div className="w-full my-8">
       {title && (
-        <h3 className="text-xl font-semibold mb-4 text-foreground">
+        <p className="text-xl font-bold mb-4 text-foreground">
           {title}
-        </h3>
+        </p>
       )}
       
       <div className={`w-full ${isScrollable ? 'overflow-x-auto' : ''}`}>
