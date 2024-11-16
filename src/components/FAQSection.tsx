@@ -52,11 +52,12 @@ export default function FAQSection({ faqs }: FAQSectionProps) {
               aria-expanded={openIndex === index}
               aria-controls={`faq-content-${index}`}
             >
-              <h3 className="text-lg font-semibold">{faq.question}</h3>
+              <span className="text-lg font-semibold">{faq.question}</span>
               <ChevronDown 
                 className={`h-5 w-5 transition-transform duration-200 ${
                   openIndex === index ? 'transform rotate-180' : ''
                 }`}
+                aria-hidden="true"
               />
             </button>
             {openIndex === index && (

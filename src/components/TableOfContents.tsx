@@ -23,6 +23,11 @@ export default function TableOfContents() {
           text: heading.textContent || '',
           level: Number(heading.tagName[1]),
         };
+      })
+      .filter((heading) => {
+        // Exclude "Author" and "Leave a Comment" sections
+        const excludedSections = ['author', 'leave-a-comment'];
+        return !excludedSections.some(section => heading.id.toLowerCase().includes(section));
       });
 
     setHeadings(articleHeadings);
@@ -56,15 +61,20 @@ export default function TableOfContents() {
       });
     });
 
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      faqButtons.forEach(button => {
+        button.removeEventListener('click', observeElements);
+      });
+    };
   }, []);
 
   if (headings.length === 0) return null;
 
   return (
-    <nav className="space-y-2">
+    <nav className="space-y-2" aria-label="Table of contents">
       <div className="flex items-center gap-2 font-semibold mb-4">
-        <Link className="h-4 w-4" />
+        <Link className="h-4 w-4" aria-hidden="true" />
         <span>Table of Contents</span>
       </div>
       <ul className="space-y-2 text-sm">
