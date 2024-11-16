@@ -39,7 +39,7 @@ export function AuthorCard({ author }: AuthorCardProps) {
               />
             </div>
           )}
-          <h3 className="text-lg font-semibold mb-1">{author.name}</h3>
+          <p className="text-lg font-semibold mb-1">{author.name}</p>
           {author.role && (
             <p className="text-sm text-muted-foreground mb-4">{author.role}</p>
           )}
