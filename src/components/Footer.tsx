@@ -99,17 +99,17 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Categories</h3>
             <nav className="flex flex-col space-y-2">
-              <Link href="/category/movies/" className="text-sm text-muted-foreground hover:text-foreground">
-                Movies
+              <Link href="/category/model/" className="text-sm text-muted-foreground hover:text-foreground">
+                Model
               </Link>
-              <Link href="/category/music/" className="text-sm text-muted-foreground hover:text-foreground">
-                Music
+              <Link href="/category/musician/" className="text-sm text-muted-foreground hover:text-foreground">
+                Musician
               </Link>
-              <Link href="/category/sports/" className="text-sm text-muted-foreground hover:text-foreground">
-                Sports
+              <Link href="/category/business-person/" className="text-sm text-muted-foreground hover:text-foreground">
+                Business Person
               </Link>
-              <Link href="/category/tech/" className="text-sm text-muted-foreground hover:text-foreground">
-                Tech
+              <Link href="/category/social-media-influencer/" className="text-sm text-muted-foreground hover:text-foreground">
+                Social Media Influencer 
               </Link>
             </nav>
           </div>
