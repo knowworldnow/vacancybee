@@ -18,18 +18,22 @@ interface TableProps {
   isScrollable?: boolean;
 }
 
+interface ParsedData {
+  [key: string]: string | number;
+}
+
 export function CustomTable({
   title,
   tableData,
   caption,
   isScrollable = false
 }: TableProps) {
-  const [parsedData, setParsedData] = useState<any[]>([]);
+  const [parsedData, setParsedData] = useState<ParsedData[]>([]);
   const [headers, setHeaders] = useState<string[]>([]);
 
   useEffect(() => {
     try {
-      const data = JSON.parse(tableData);
+      const data: ParsedData[] = JSON.parse(tableData);
       if (Array.isArray(data) && data.length > 0) {
         setParsedData(data);
         setHeaders(Object.keys(data[0]));
@@ -39,19 +43,23 @@ export function CustomTable({
     }
   }, [tableData]);
 
-  const formatHeader = (header: string) => {
+  const formatHeader = (header: string): string => {
     return header
       .split(/(?=[A-Z])|_/)
       .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(' ');
   };
 
+  if (parsedData.length === 0) {
+    return null;
+  }
+
   return (
     <div className="w-full my-8">
       {title && (
-        <p className="text-xl font-bold mb-4 text-foreground">
+        <h3 className="text-xl font-bold mb-4 text-foreground">
           {title}
-        </p>
+        </h3>
       )}
       
       <div className={`w-full ${isScrollable ? 'overflow-x-auto' : ''}`}>
@@ -59,7 +67,7 @@ export function CustomTable({
           {caption && <TableCaption>{caption}</TableCaption>}
           <TableHeader>
             <TableRow>
-              {headers.map((header, index) => (
+              {headers.map((header) => (
                 <TableHead key={header} className="font-semibold">
                   {formatHeader(header)}
                 </TableHead>
@@ -69,9 +77,9 @@ export function CustomTable({
           <TableBody>
             {parsedData.map((row, rowIndex) => (
               <TableRow key={rowIndex}>
-                {headers.map((header, colIndex) => (
-                  <TableCell key={`${rowIndex}-${colIndex}`}>
-                    {row[header]}
+                {headers.map((header) => (
+                  <TableCell key={`${rowIndex}-${header}`}>
+                    {String(row[header])}
                   </TableCell>
                 ))}
               </TableRow>
