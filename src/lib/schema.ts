@@ -38,7 +38,7 @@ export function generateArticleSchema({
       logo: {
         '@type': 'ImageObject',
         url: 'https://vacancybee.com/logo.webp',
-        width: 600,
+        width: 300,
         height: 60,
       },
     },
