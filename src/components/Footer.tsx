@@ -34,9 +34,6 @@ export default function Footer() {
               <Link href="/privacy-policy/" className="text-sm text-muted-foreground hover:text-foreground">
                 Privacy Policy
               </Link>
-              <Link href="/terms/" className="text-sm text-muted-foreground hover:text-foreground">
-                Terms of Service
-              </Link>
             </nav>
           </div>
 
@@ -60,7 +57,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 pt-8 border-t text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} VacancyBee. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} VacancyBee. All rights reserved.</p>
         </div>
       </div>
     </footer>
