@@ -11,9 +11,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const category = await getCategory(params.slug);
   if (!category) return {};
 
+  const canonicalUrl = `https://vacancybee.com/category/${params.slug}`;
+
   return {
     title: `${category.title} - Celebrity News`,
     description: category.description || `Latest ${category.title} celebrity news and updates`,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title: `${category.title} - Celebrity News`,
+      description: category.description || `Latest ${category.title} celebrity news and updates`,
+      url: canonicalUrl,
+    },
   };
 }
 

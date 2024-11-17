@@ -41,14 +41,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!author) return {};
 
   const imageUrl = author.image ? urlForImage(author.image)?.url() : undefined;
+  const canonicalUrl = `https://vacancybee.com/author/${params.slug}`;
 
   return {
     title: `${author.name} - Author Profile`,
     description: `Read articles by ${author.name} on VacancyBee`,
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
       title: `${author.name} - Author Profile`,
       description: `Read articles by ${author.name} on VacancyBee`,
       images: imageUrl ? [{ url: imageUrl }] : [],
+      url: canonicalUrl,
     },
   };
 }

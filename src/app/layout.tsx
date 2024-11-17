@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   creator: 'VacancyBee',
   metadataBase: new URL('https://vacancybee.com'),
   alternates: {
-    canonical: '/',
+    canonical: 'https://vacancybee.com',
   },
   openGraph: {
     type: 'website',

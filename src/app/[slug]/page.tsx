@@ -24,10 +24,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!post) return {};
 
   const ogImage = post.mainImage ? urlForImage(post.mainImage).url() : undefined;
+  const canonicalUrl = `https://vacancybee.com/${params.slug}`;
 
   return {
     title: post.title,
     description: post.excerpt,
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
       title: post.title,
       description: post.excerpt,
@@ -35,6 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       publishedTime: post.publishedAt,
       authors: [post.author.name],
       images: ogImage ? [ogImage] : [],
+      url: canonicalUrl,
     },
   };
 }
@@ -46,7 +51,7 @@ export default async function PostPage({ params }: Props) {
     notFound();
   }
 
-  const url = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://vacancybee.com'}/${params.slug}`;
+  const url = `https://vacancybee.com/${params.slug}`;
   const ogImage = post.mainImage ? urlForImage(post.mainImage).url() : undefined;
 
   const articleSchema = generateArticleSchema({
@@ -57,7 +62,7 @@ export default async function PostPage({ params }: Props) {
     publishedTime: post.publishedAt,
     modifiedTime: post.publishedAt,
     authorName: post.author.name,
-    authorUrl: `/author/${post.author.slug.current}`,
+    authorUrl: `https://vacancybee.com/author/${post.author.slug.current}`,
   });
 
   return (
