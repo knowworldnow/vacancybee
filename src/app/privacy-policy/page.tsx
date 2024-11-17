@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Privacy Policy | VacancyBee',
-  description: 'VacancyBee\'s Privacy Policy explains how we collect, use, and protect your information.',
+  description: 'VacancyBee&apos;s Privacy Policy explains how we collect, use, and protect your information.',
   alternates: {
     canonical: 'https://vacancybee.com/privacy-policy/',
   },
@@ -12,9 +12,9 @@ export default function PrivacyPolicy() {
   return (
     <div className="container mx-auto py-12 px-4">
       <h1 className="text-3xl font-bold mb-6">Privacy Policy</h1>
-      <p className="mb-4"><strong>Effective Date:</strong> November 17, 2024</p>
+      <p className="mb-4"><strong>Effective Date:</strong> [Insert Date]</p>
       
-      <p className="mb-4">Welcome to VacancyBee ("we," "our," or "us"). Your privacy is critically important to us. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website, vacancybee.com ("Website"). By accessing or using our Website, you agree to the practices outlined in this policy.</p>
+      <p className="mb-4">Welcome to VacancyBee (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;). Your privacy is critically important to us. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website, vacancybee.com (&quot;Website&quot;). By accessing or using our Website, you agree to the practices outlined in this policy.</p>
       
       <h2 className="text-2xl font-semibold mt-8 mb-4">Information We Collect</h2>
       
@@ -74,11 +74,11 @@ export default function PrivacyPolicy() {
       </ul>
       <p className="mb-4">To exercise your rights, please contact us at admin@vacancybee.com.</p>
       
-      <h2 className="text-2xl font-semibold mt-8 mb-4">Children's Privacy</h2>
+      <h2 className="text-2xl font-semibold mt-8 mb-4">Children&apos;s Privacy</h2>
       <p className="mb-4">Our Website is not directed at children under 13, and we do not knowingly collect personal information from children. If you believe a child has provided us with personal information, please contact us to have it removed.</p>
       
       <h2 className="text-2xl font-semibold mt-8 mb-4">Changes to This Privacy Policy</h2>
-      <p className="mb-4">We may update this Privacy Policy from time to time to reflect changes in our practices or for other operational, legal, or regulatory reasons. The "Effective Date" at the top of this page indicates when the latest changes were made.</p>
+      <p className="mb-4">We may update this Privacy Policy from time to time to reflect changes in our practices or for other operational, legal, or regulatory reasons. The &quot;Effective Date&quot; at the top of this page indicates when the latest changes were made.</p>
       
       <h2 className="text-2xl font-semibold mt-8 mb-4">Contact Us</h2>
       <p className="mb-4">If you have questions or concerns about this Privacy Policy, please contact us at:</p>
