@@ -5,22 +5,30 @@ import { PortableText } from '@portabletext/react';
 import { client } from '@/sanity/lib/client';
 import { urlForImage } from '@/sanity/lib/image';
 import PostGrid from '@/components/PostGrid';
-import type { Author } from '@/lib/types';
+import { BasePost } from '@/lib/types';
 
 type Props = {
   params: { slug: string };
 };
 
-async function getAuthor(slug: string) {
+type AuthorData = {
+  _id: string;
+  name: string;
+  image: any;
+  bio: any[];
+  posts: BasePost[];
+};
+
+async function getAuthor(slug: string): Promise<AuthorData | null> {
   return client.fetch(`
     *[_type == "author" && slug.current == $slug][0] {
       _id,
       name,
       image,
       bio,
-      social,
       "posts": *[_type == "post" && references(^._id)] | order(publishedAt desc) {
         _id,
+        _type,
         title,
         slug,
         mainImage,
@@ -44,16 +52,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const canonicalUrl = `https://vacancybee.com/author/${params.slug}`;
 
   return {
-    title: `${author.name} - Author Profile`,
-    description: `Read articles by ${author.name} on VacancyBee`,
+    title: `${author.name} - Author Profile | VacancyBee`,
+    description: `Read articles by ${author.name} on VacancyBee - Your trusted source for job opportunities and career insights.`,
     alternates: {
       canonical: canonicalUrl,
     },
     openGraph: {
-      title: `${author.name} - Author Profile`,
-      description: `Read articles by ${author.name} on VacancyBee`,
-      images: imageUrl ? [{ url: imageUrl }] : [],
+      title: `${author.name} - Author Profile | VacancyBee`,
+      description: `Read articles by ${author.name} on VacancyBee - Your trusted source for job opportunities and career insights.`,
+      images: imageUrl ? [{ url: imageUrl, width: 800, height: 600, alt: author.name }] : [],
       url: canonicalUrl,
+      type: 'profile',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${author.name} - Author Profile | VacancyBee`,
+      description: `Read articles by ${author.name} on VacancyBee - Your trusted source for job opportunities and career insights.`,
+      images: imageUrl ? [imageUrl] : [],
     },
   };
 }
@@ -65,7 +80,7 @@ export default async function AuthorPage({ params }: Props) {
   const imageUrl = author.image ? urlForImage(author.image)?.url() : undefined;
 
   return (
-    <div className="container py-10">
+    <div className="container py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
           {imageUrl && (
@@ -82,17 +97,21 @@ export default async function AuthorPage({ params }: Props) {
           )}
           <h1 className="text-4xl font-bold mb-4">{author.name}</h1>
           {author.bio && (
-            <div className="prose prose-lg dark:prose-invert mx-auto">
+            <div className="prose prose-lg dark:prose-invert mx-auto mb-6">
               <PortableText value={author.bio} />
             </div>
           )}
         </div>
 
-        {author.posts && author.posts.length > 0 && (
+        {author.posts && author.posts.length > 0 ? (
           <div className="space-y-8">
             <h2 className="text-2xl font-bold">Articles by {author.name}</h2>
             <PostGrid posts={author.posts} />
           </div>
+        ) : (
+          <p className="text-center text-muted-foreground">
+            No articles found for this author.
+          </p>
         )}
       </div>
     </div>
