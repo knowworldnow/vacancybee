@@ -1,6 +1,6 @@
 'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Shield, Mail, Globe } from 'lucide-react'
@@ -9,7 +9,7 @@ export function PrivacyPolicyContent() {
   return (
     <Card className="max-w-4xl mx-auto">
       <CardHeader className="text-center">
-        <CardTitle className="text-3xl font-bold mb-2">Privacy Policy</CardTitle>
+        <h1 className="text-3xl font-bold mb-2">Privacy Policy</h1>
         <p className="text-muted-foreground">Effective Date: November 17, 2024</p>
       </CardHeader>
       <CardContent>
