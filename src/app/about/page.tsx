@@ -7,12 +7,12 @@ export const metadata: Metadata = {
   title: 'About Us - VacancyBee',
   description: 'Learn about VacancyBee, your ultimate destination for authentic and engaging celebrity insights, founded by Shoumya Chowdhury and Anmita Das.',
   alternates: {
-    canonical: 'https://vacancybee.com/about',
+    canonical: 'https://vacancybee.com/about/',
   },
   openGraph: {
     title: 'About Us - VacancyBee',
     description: 'Learn about VacancyBee, your ultimate destination for authentic and engaging celebrity insights, founded by Shoumya Chowdhury and Anmita Das.',
-    url: 'https://vacancybee.com/about',
+    url: 'https://vacancybee.com/about/',
   },
 };
 
@@ -32,40 +32,38 @@ const teamMembers = [
 ];
 
 const features = [
-    {
-      icon: Shield,
-      title: 'Authenticity You Can Trust',
-      description: 'Our content is rooted in rigorous research and a commitment to accuracy.',
-    },
-    {
-      icon: Newspaper,
-      title: 'Engaging and Insightful',
-      description: 'We strive to create stories that entertain, inform, and inspire.',
-    },
-    {
-      icon: BookOpen,
-      title: 'Passion for Knowledge',
-      description: 'Blogging isn\'t just a hobby for us—it\'s our way of making a difference by sharing real, reliable information.',
-    },
-    {
-      icon: Users2,
-      title: 'Community Focused',
-      description: 'Whether you\'re a curious reader or a pop culture enthusiast, we\'re here to enlighten and entertain you.',
-    },
-  ];
+  {
+    icon: Shield,
+    title: 'Authenticity You Can Trust',
+    description: 'Our content is rooted in rigorous research and a commitment to accuracy.',
+  },
+  {
+    icon: Newspaper,
+    title: 'Engaging and Insightful',
+    description: 'We strive to create stories that entertain, inform, and inspire.',
+  },
+  {
+    icon: BookOpen,
+    title: 'Passion for Knowledge',
+    description: "Blogging isn&apos;t just a hobby for us&mdash;it&apos;s our way of making a difference by sharing real, reliable information.",
+  },
+  {
+    icon: Users2,
+    title: 'Community Focused',
+    description: "Whether you&apos;re a curious reader or a pop culture enthusiast, we&apos;re here to enlighten and entertain you.",
+  },
+];
 
 export default function AboutPage() {
   return (
     <div className="container py-12 space-y-16">
-      {/* Hero Section */}
       <section className="text-center max-w-3xl mx-auto">
         <h1 className="text-4xl font-bold mb-6">About Us</h1>
         <p className="text-lg text-muted-foreground">
-          Welcome to VacancyBee, your ultimate destination for authentic and engaging celebrity insights. We are committed to delivering well-researched and reliable information about the world's most captivating personalities.
+          Welcome to VacancyBee, your ultimate destination for authentic and engaging celebrity insights. We are committed to delivering well-researched and reliable information about the world&apos;s most captivating personalities.
         </p>
       </section>
 
-      {/* Team Section */}
       <section className="space-y-8">
         <h2 className="text-3xl font-bold text-center mb-8">Who We Are</h2>
         <div className="grid md:grid-cols-2 gap-8">
@@ -90,7 +88,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* What We Do Section */}
       <section className="bg-muted/50 py-12 rounded-lg">
         <div className="max-w-3xl mx-auto text-center px-4">
           <h2 className="text-3xl font-bold mb-6">What We Do</h2>
@@ -100,7 +97,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Features Grid */}
       <section>
         <h2 className="text-3xl font-bold text-center mb-12">Why Choose VacancyBee?</h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -116,13 +112,12 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Closing Section */}
       <section className="text-center max-w-3xl mx-auto bg-primary/5 p-8 rounded-lg">
         <p className="text-lg mb-4">
           Thank you for visiting VacancyBee. We look forward to sharing this journey of knowledge and discovery with you!
         </p>
         <p className="text-muted-foreground">
-          Whether you're seeking genuine stories about your favorite personalities or looking for reliable celebrity information, VacancyBee is here for you.
+          Whether you&apos;re seeking genuine stories about your favorite personalities or looking for reliable celebrity information, VacancyBee is here for you.
         </p>
       </section>
     </div>
