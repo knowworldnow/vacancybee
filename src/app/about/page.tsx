@@ -32,27 +32,27 @@ const teamMembers = [
 ];
 
 const features = [
-  {
-    icon: Shield,
-    title: 'Authenticity You Can Trust',
-    description: 'Our content is rooted in rigorous research and a commitment to accuracy.',
-  },
-  {
-    icon: Newspaper,
-    title: 'Engaging and Insightful',
-    description: 'We strive to create stories that entertain, inform, and inspire.',
-  },
-  {
-    icon: BookOpen,
-    title: 'Passion for Knowledge',
-    description: "Blogging isn&apos;t just a hobby for us&mdash;it&apos;s our way of making a difference by sharing real, reliable information.",
-  },
-  {
-    icon: Users2,
-    title: 'Community Focused',
-    description: "Whether you&apos;re a curious reader or a pop culture enthusiast, we&apos;re here to enlighten and entertain you.",
-  },
-];
+    {
+      icon: Shield,
+      title: 'Authenticity You Can Trust',
+      description: 'Our content is rooted in rigorous research and a commitment to accuracy.',
+    },
+    {
+      icon: Newspaper,
+      title: 'Engaging and Insightful',
+      description: 'We strive to create stories that entertain, inform, and inspire.',
+    },
+    {
+      icon: BookOpen,
+      title: 'Passion for Knowledge',
+      description: "Blogging isn't just a hobby for us—it's our way of making a difference by sharing real, reliable information.",
+    },
+    {
+      icon: Users2,
+      title: 'Community Focused',
+      description: "Whether you're a curious reader or a pop culture enthusiast, we're here to enlighten and entertain you.",
+    },
+  ];
 
 export default function AboutPage() {
   return (
